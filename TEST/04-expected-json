@@ -1,0 +1,35 @@
+set policy to deny
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"deny"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"deny"
+}
+run first four test cases
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,r,o2"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,w,o2"}
+set policy to grant
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"grant"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"grant"
+}
+run first four test cases
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o2"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o2"}
+end of curl tests

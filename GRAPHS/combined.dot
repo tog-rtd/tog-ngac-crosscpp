@@ -1,0 +1,99 @@
+strict digraph "Combined Policy" {
+  node [shape=none]
+  APC [label="",width=0,height=0];
+  "<Users>"->"<User Attributes>" [arrowhead=none,style=invis];
+  "<User Attributes>"->APC [arrowhead=none,style=invis];
+  APC->"<Policy Classes>" [arrowhead=none,style=invis];
+  node [shape=ellipse]
+  Ana [peripheries=2];  "OEM employee 1" [peripheries=2];  Sebastian [peripheries=2];
+  "VIN-1001 Door Signals";  "VIN-1001 Shift Signals";  "VIN-1001 Trip Signals";  "VIN-1001 Window Signals";  "VIN-1002 Door Signals";  "VIN-1002 Shift Signals";  "VIN-1002 Trip Signals";  "VIN-1002 Window Signals";  "VIN-2001 Door Signals";  "VIN-2001 Shift Signals";  "VIN-2001 Trip Signals";  "VIN-2001 Window Signals";  "VIN-3001 Door Signals";  "VIN-3001 Shift Signals";  "VIN-3001 Trip Signals";  "VIN-3001 Window Signals";
+  Ana -> "Correia Family";
+  Ana -> "Vehicle Owners";
+  "OEM employee 1" -> "Vehicle OEM";
+  Sebastian -> "Scholze Family";
+  Sebastian -> "Vehicle Owners";
+  "VIN-1001 Door Signals" -> "Door Signals";
+  "VIN-1001 Door Signals" -> "Vehicle VIN-1001";
+  "VIN-1001 Shift Signals" -> "Shift Signals";
+  "VIN-1001 Shift Signals" -> "Vehicle VIN-1001";
+  "VIN-1001 Trip Signals" -> "Trip Signals";
+  "VIN-1001 Trip Signals" -> "Vehicle VIN-1001";
+  "VIN-1001 Window Signals" -> "Vehicle VIN-1001";
+  "VIN-1001 Window Signals" -> "Window Signals";
+  "VIN-1002 Door Signals" -> "Door Signals";
+  "VIN-1002 Door Signals" -> "Vehicle VIN-1002";
+  "VIN-1002 Shift Signals" -> "Shift Signals";
+  "VIN-1002 Shift Signals" -> "Vehicle VIN-1002";
+  "VIN-1002 Trip Signals" -> "Trip Signals";
+  "VIN-1002 Trip Signals" -> "Vehicle VIN-1002";
+  "VIN-1002 Window Signals" -> "Vehicle VIN-1002";
+  "VIN-1002 Window Signals" -> "Window Signals";
+  "VIN-2001 Door Signals" -> "Door Signals";
+  "VIN-2001 Door Signals" -> "Vehicle VIN-2001";
+  "VIN-2001 Shift Signals" -> "Shift Signals";
+  "VIN-2001 Shift Signals" -> "Vehicle VIN-2001";
+  "VIN-2001 Trip Signals" -> "Trip Signale";
+  "VIN-2001 Trip Signals" -> "Vehicle VIN-2001";
+  "VIN-2001 Window Signals" -> "Vehicle VIN-2001";
+  "VIN-2001 Window Signals" -> "Window Signals";
+  "VIN-3001 Door Signals" -> "Door Signals";
+  "VIN-3001 Door Signals" -> "Vehicle VIN-3001";
+  "VIN-3001 Shift Signals" -> "Shift Signals";
+  "VIN-3001 Shift Signals" -> "Vehicle VIN-3001";
+  "VIN-3001 Trip Signals" -> "Trip Signals";
+  "VIN-3001 Trip Signals" -> "Vehicle VIN-3001";
+  "VIN-3001 Window Signals" -> "Vehicle VIN-3001";
+  "VIN-3001 Window Signals" -> "Window Signals";
+  "Correia Family" -> Owners;
+  "Correia Family Vehicles" -> Vehicles;
+  "Door Signals" -> "Owner Accessible Signals";
+  "OEM Accessible Signals" -> "Signals Access";
+  "Owner Accessible Signals" -> "OEM Accessible Signals";
+  "Owner Accessible Signals" -> "Signals Access";
+  Owners -> "Vehicle Ownership";
+  "Scholze Family" -> Owners;
+  "Scholze Family Vehicles" -> Vehicles;
+  "Shift Signals" -> "Owner Accessible Signals";
+  "Signals Access" -> PM;
+  "Trip Signals" -> "OEM Accessible Signals";
+  "Vehicle OEM" -> "Vehicle Owners";
+  "Vehicle Owners" -> "Signals Access";
+  "Vehicle Ownership" -> PM;
+  "Vehicle VIN-1001" -> "Scholze Family Vehicles";
+  "Vehicle VIN-1002" -> "Correia Family Vehicles";
+  "Vehicle VIN-2001" -> "Scholze Family Vehicles";
+  "Vehicle VIN-3001" -> "Correia Family Vehicles";
+  Vehicles -> "Vehicle Ownership";
+  "Window Signals" -> "Owner Accessible Signals";
+  "Correia Family" -> "Correia Family Vehicles" [constraint=false,label="[o,r]",style=dashed,arrowhead=none];
+  "Scholze Family" -> "Scholze Family Vehicles" [constraint=false,label="[o,r]",style=dashed,arrowhead=none];
+  "Vehicle OEM" -> "OEM Accessible Signals" [constraint=false,label="[r,w]",style=dashed,arrowhead=none];
+  "Vehicle Owners" -> "Owner Accessible Signals" [constraint=false,label="[r]",style=dashed,arrowhead=none];
+  { rank=same; Ana "OEM employee 1" Sebastian "VIN-1001 Door Signals" "VIN-1001 Shift Signals" "VIN-1001 Trip Signals" "VIN-1001 Window Signals" "VIN-1002 Door Signals" "VIN-1002 Shift Signals" "VIN-1002 Trip Signals" "VIN-1002 Window Signals" "VIN-2001 Door Signals" "VIN-2001 Shift Signals" "VIN-2001 Trip Signals" "VIN-2001 Window Signals" "VIN-3001 Door Signals" "VIN-3001 Shift Signals" "VIN-3001 Trip Signals" "VIN-3001 Window Signals" }
+  { rank=same; "Correia Family" "Vehicle OEM" "Scholze Family" "Door Signals" "Vehicle VIN-1001" "Shift Signals" "Vehicle VIN-1001" "Trip Signals" "Vehicle VIN-1001" "Vehicle VIN-1001" "Window Signals" "Door Signals" "Vehicle VIN-1002" "Shift Signals" "Vehicle VIN-1002" "Trip Signals" "Vehicle VIN-1002" "Vehicle VIN-1002" "Window Signals" "Door Signals" "Vehicle VIN-2001" "Shift Signals" "Vehicle VIN-2001" "Trip Signale" "Vehicle VIN-2001" "Vehicle VIN-2001" "Window Signals" "Door Signals" "Vehicle VIN-3001" "Shift Signals" "Vehicle VIN-3001" "Trip Signals" "Vehicle VIN-3001" "Vehicle VIN-3001" "Window Signals" }
+  { rank=same; Owners "Vehicle Owners" "OEM Accessible Signals" "Owner Accessible Signals" Vehicles }
+  subgraph user_dag {
+    subgraph u_nodes {
+      Ana; "OEM employee 1"; Sebastian; 
+      Ana->"OEM employee 1"->Sebastian [style=invis];
+    }
+    subgraph ua_nodes {
+      "Correia Family"; Owners; "Scholze Family"; "Vehicle OEM"; "Vehicle Owners"; 
+    }
+  }
+  subgraph object_dag {
+    subgraph o_nodes {
+      "VIN-1001 Door Signals"; "VIN-1001 Shift Signals"; "VIN-1001 Trip Signals"; "VIN-1001 Window Signals"; "VIN-1002 Door Signals"; "VIN-1002 Shift Signals"; "VIN-1002 Trip Signals"; "VIN-1002 Window Signals"; "VIN-2001 Door Signals"; "VIN-2001 Shift Signals"; "VIN-2001 Trip Signals"; "VIN-2001 Window Signals"; "VIN-3001 Door Signals"; "VIN-3001 Shift Signals"; "VIN-3001 Trip Signals"; "VIN-3001 Window Signals"; 
+      "VIN-1001 Door Signals"->"VIN-1001 Shift Signals"->"VIN-1001 Trip Signals"->"VIN-1001 Window Signals"->"VIN-1002 Door Signals"->"VIN-1002 Shift Signals"->"VIN-1002 Trip Signals"->"VIN-1002 Window Signals"->"VIN-2001 Door Signals"->"VIN-2001 Shift Signals"->"VIN-2001 Trip Signals"->"VIN-2001 Window Signals"->"VIN-3001 Door Signals"->"VIN-3001 Shift Signals"->"VIN-3001 Trip Signals"->"VIN-3001 Window Signals" [style=invis];
+    }
+    subgraph oa_nodes {
+      "Correia Family Vehicles"; "Door Signals"; "OEM Accessible Signals"; "Owner Accessible Signals"; "Scholze Family Vehicles"; "Shift Signals"; "Trip Signals"; "Vehicle VIN-1001"; "Vehicle VIN-1002"; "Vehicle VIN-2001"; "Vehicle VIN-3001"; Vehicles; "Window Signals"; 
+    }
+  }
+  subgraph pc_nodes {
+    "Signals Access" [shape=polygon,sides=5];
+    "Vehicle Ownership" [shape=polygon,sides=5];
+  }
+  node [shape=none]
+  "<Objects>"->"<Object Attributes>" [arrowhead=none,style=invis]
+}

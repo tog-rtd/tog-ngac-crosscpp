@@ -1,0 +1,147 @@
+Event Triggered Response Test
+load policy immediate
+ipolicy
+success
+set to ipolicy
+ipolicy
+success
+get the policy
+ipolicy
+success
+run test cases for ipolicy, expect: grant grant deny
+grant
+grant
+deny
+report events
+test_event
+success
+Invalid event reported: inval_event
+inval_event
+failure
+event(test_event,user(u1),policy_class(pc),operation(adnull),object(o1))
+success
+load erp immediate
+er_test1
+success
+read the policy (explicitly named as ipolicy)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+report events that change the policy
+event(test_event,user(u1),policy_class(pc),operation(adnull),object(o1))
+success
+read the policy (should be unchanged)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+report event that changes the policy adding u4
+event(test_event,user(u1),policy_class(pc),operation(addone),object(o1))
+success
+read the policy (should be changed added u4)
+policy(ipolicy, access, [
+  user(u1),
+  user(u4),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+report event that changes the policy adding u2 and assign to ua1
+event(test_event,user(u1),policy_class(pc),operation(addm1),object(o1))
+success
+read the policy (should be changed added u2 and assign)
+policy(ipolicy, access, [
+  user(u1),
+  user(u4),
+  user(u2),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  assign(u2,ua1),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+report event that changes the policy deleting u4, u2 and assign to ua1
+event(test_event,user(u1),policy_class(pc),operation(deletem1),object(o1))
+success
+read the policy (should be changed deleted u4, u2 and assign)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+report event that changes the policy AGAIN deleting u4, u2 and assign to ua1
+event(test_event,user(u1),policy_class(pc),operation(deletem1),object(o1))
+success
+read the policy (should be un-changed deletions ignored)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+End of Event Triggered Response Test

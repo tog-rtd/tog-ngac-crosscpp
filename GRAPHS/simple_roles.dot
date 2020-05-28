@@ -1,0 +1,52 @@
+strict digraph "SimpleRoles" {
+  node [shape=none]
+  APC [label="",width=0,height=0];
+  "<Users>"->"<User Attributes>" [arrowhead=none,style=invis];
+  "<User Attributes>"->APC [arrowhead=none,style=invis];
+  APC->"<Policy Classes>" [arrowhead=none,style=invis];
+  node [shape=ellipse]
+  u1 [peripheries=2];  u2 [peripheries=2];  u3 [peripheries=2];
+  dk;  di;  dsd;  dsm;
+  u1 -> simple_user;
+  u2 -> simple_user;
+  u3 -> admin_user;
+  dk -> unrestricted;
+  di -> unrestricted;
+  dsd -> unrestricted;
+  dsm -> restricted;
+  simple_user -> all_users;
+  admin_user -> all_users;
+  unrestricted -> resources;
+  restricted -> resources;
+  all_users -> "Simple Roles";
+  resources -> "Simple Roles";
+  "Simple Roles" -> PM;
+  simple_user -> unrestricted [constraint=false,label="[g]",style=dashed,arrowhead=none];
+  admin_user -> resources [constraint=false,label="[c,r,u,g]",style=dashed,arrowhead=none];
+  { rank=same; u1 u2 u3 dk di dsd dsm }
+  { rank=same; simple_user simple_user admin_user unrestricted unrestricted unrestricted restricted }
+  { rank=same; all_users resources }
+  subgraph user_dag {
+    subgraph u_nodes {
+      u1; u2; u3; 
+      u1->u2->u3 [style=invis];
+    }
+    subgraph ua_nodes {
+      simple_user; admin_user; all_users; 
+    }
+  }
+  subgraph object_dag {
+    subgraph o_nodes {
+      dk; di; dsd; dsm; 
+      dk->di->dsd->dsm [style=invis];
+    }
+    subgraph oa_nodes {
+      unrestricted; restricted; resources; 
+    }
+  }
+  subgraph pc_nodes {
+    "Simple Roles" [shape=polygon,sides=5];
+  }
+  node [shape=none]
+  "<Objects>"->"<Object Attributes>" [arrowhead=none,style=invis]
+}

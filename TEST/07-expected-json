@@ -1,0 +1,60 @@
+Context Change Notification Test
+load immediate cpolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"cpolicy"
+}
+set to cpolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"cpolicy"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"cpolicy"
+}
+read the policy (explicitly named as cpolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(cpolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1),\n  cond(weekday, associate(ua1,[r,w],oa1))\n]).\n"
+}
+run test cases for cpolicy with current values, expect: grant grant deny if weekday==true else deny deny deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+run context_notify setting weekday to true
+{
+  "respStatus":"success",
+  "respMessage":"context change notification accepted",
+  "respBody":"[weekday:true]"
+}
+run test cases for cpolicy, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+run context_notify setting weekday to false
+{
+  "respStatus":"success",
+  "respMessage":"context change notification accepted",
+  "respBody":"[business:false,weekday:false]"
+}
+re-run test cases for cpolicy, expect: deny deny deny
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+run context_notify setting weekday to true
+{
+  "respStatus":"success",
+  "respMessage":"context change notification accepted",
+  "respBody":"[weekday:true]"
+}
+re-run test cases for cpolicy, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+end of Context Change Notification Test

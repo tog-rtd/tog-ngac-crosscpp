@@ -1,0 +1,113 @@
+Event Triggered Response Test
+load policy immediate
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"ipolicy"
+}
+set to ipolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"ipolicy"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"ipolicy"
+}
+run test cases for ipolicy, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+report events
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"test_event"
+}
+Invalid event reported: inval_event
+{
+  "respStatus":"failure",
+  "respMessage":"event not reported",
+  "respBody":"inval_event"
+}
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"event(test_event,user(u1),policy_class(pc),operation(adnull),object(o1))"
+}
+load erp immediate
+{
+  "respStatus":"success",
+  "respMessage":"ER package loaded immediate",
+  "respBody":"er_test1"
+}
+read the policy (explicitly named as ipolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+report events that change the policy
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"event(test_event,user(u1),policy_class(pc),operation(adnull),object(o1))"
+}
+read the policy (should be unchanged)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+report event that changes the policy adding u4
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"event(test_event,user(u1),policy_class(pc),operation(addone),object(o1))"
+}
+read the policy (should be changed added u4)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user(u4),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+report event that changes the policy adding u2 and assign to ua1
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"event(test_event,user(u1),policy_class(pc),operation(addm1),object(o1))"
+}
+read the policy (should be changed added u2 and assign)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user(u4),\n  user(u2),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  assign(u2,ua1),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+report event that changes the policy deleting u4, u2 and assign to ua1
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"event(test_event,user(u1),policy_class(pc),operation(deletem1),object(o1))"
+}
+read the policy (should be changed deleted u4, u2 and assign)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+report event that changes the policy AGAIN deleting u4, u2 and assign to ua1
+{
+  "respStatus":"success",
+  "respMessage":"event reported",
+  "respBody":"event(test_event,user(u1),policy_class(pc),operation(deletem1),object(o1))"
+}
+read the policy (should be un-changed deletions ignored)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+End of Event Triggered Response Test

@@ -1,0 +1,38 @@
+accessm tests
+set to Policy (a)
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"Policy (a)"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Policy (a)"
+}
+run first four test cases for Policy (a), expect grant grant grant deny
+{
+  "respStatus":"success",
+  "respMessage":"[(u1,r,o1),(u1,w,o1),(u2,r,o2),(u1,w,o2)]",
+  "respBody":"[grant,grant,grant,deny]"
+}
+set to Policy (b)
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"Policy (b)"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Policy (b)"
+}
+run first four test cases for Policy (b), expect deny deny grant grant
+{
+  "respStatus":"success",
+  "respMessage":"[(u1,r,o1),(u1,w,o1),(u1,r,o2),(u1,w,o2)]",
+  "respBody":"[deny,deny,grant,grant]"
+}
+end of accessm tests

@@ -1,0 +1,54 @@
+Context Change Notification Test
+load immediate cpolicy
+cpolicy
+success
+set to cpolicy
+cpolicy
+success
+get the policy
+cpolicy
+success
+read the policy (explicitly named as cpolicy)
+policy(cpolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1),
+  cond(weekday, associate(ua1,[r,w],oa1))
+]).
+
+success
+run test cases for cpolicy with current values, expect: grant grant deny if weekday==true else deny deny deny
+grant
+grant
+deny
+run context_notify setting weekday to true
+context change notification accepted
+success
+run test cases for cpolicy, expect: grant grant deny
+grant
+grant
+deny
+run context_notify setting weekday to false
+context change notification accepted
+success
+re-run test cases for cpolicy, expect: deny deny deny
+deny
+deny
+deny
+run context_notify setting weekday to true
+context change notification accepted
+success
+re-run test cases for cpolicy, expect: grant grant deny
+grant
+grant
+deny
+end of Context Change Notification Test

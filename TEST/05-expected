@@ -1,0 +1,115 @@
+add/delete multiple
+first load ipolicy immediate
+ipolicy
+success
+set to ipolicy
+ipolicy
+success
+read the policy (explicitly named as ipolicy)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+try to add and delete assign when neither the user or attribute are defined - should fail
+error adding element
+failure
+error deleting element
+failure
+try to add and delete user - should succeed
+element added
+success
+element deleted
+success
+try to delete user when already deleted - should fail
+error deleting element
+failure
+read the policy (explicitly named as ipolicy)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+try a legitimate sequence of add/delete operations
+element added
+success
+element deleted
+success
+read the policy (explicitly named as ipolicy)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(u1,ua1),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+try legitimate add/delete multiple operations
+elements deleted
+success
+read the policy (two elements removed)
+policy(ipolicy, access, [
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+add two elements back
+elements added
+success
+read the policy (should be restored to original - except for order)
+policy(ipolicy, access, [
+  user(u1),
+  user_attribute(ua1),
+  object(o1),
+  object_attribute(oa1),
+  policy_class(access),
+  connector('PM'),
+  assign(o1,oa1),
+  assign(ua1,access),
+  assign(oa1,access),
+  assign(access,'PM'),
+  assign(u1,ua1),
+  associate(ua1,[r,w],oa1)
+]).
+
+success
+end of add delete multiple tests

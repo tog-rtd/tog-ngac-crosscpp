@@ -1,0 +1,67 @@
+strict digraph "Signals Access Policy" {
+  node [shape=none]
+  APC [label="",width=0,height=0];
+  "<Users>"->"<User Attributes>" [arrowhead=none,style=invis];
+  "<User Attributes>"->APC [arrowhead=none,style=invis];
+  APC->"<Policy Classes>" [arrowhead=none,style=invis];
+  node [shape=ellipse]
+  Sebastian [peripheries=2];  Ana [peripheries=2];  "OEM employee 1" [peripheries=2];
+  "VIN-1001 Shift Signals";  "VIN-1001 Window Signals";  "VIN-1001 Door Signals";  "VIN-1001 Trip Signals";  "VIN-1002 Shift Signals";  "VIN-1002 Window Signals";  "VIN-1002 Door Signals";  "VIN-1002 Trip Signals";  "VIN-2001 Shift Signals";  "VIN-2001 Window Signals";  "VIN-2001 Door Signals";  "VIN-2001 Trip Signals";  "VIN-3001 Shift Signals";  "VIN-3001 Window Signals";  "VIN-3001 Door Signals";  "VIN-3001 Trip Signals";
+  Sebastian -> "Vehicle Owners";
+  Ana -> "Vehicle Owners";
+  "OEM employee 1" -> "Vehicle OEM";
+  "VIN-1001 Shift Signals" -> "Shift Signals";
+  "VIN-1001 Window Signals" -> "Window Signals";
+  "VIN-1001 Door Signals" -> "Door Signals";
+  "VIN-1001 Trip Signals" -> "Trip Signals";
+  "VIN-1002 Shift Signals" -> "Shift Signals";
+  "VIN-1002 Window Signals" -> "Window Signals";
+  "VIN-1002 Door Signals" -> "Door Signals";
+  "VIN-1002 Trip Signals" -> "Trip Signals";
+  "VIN-2001 Shift Signals" -> "Shift Signals";
+  "VIN-2001 Window Signals" -> "Window Signals";
+  "VIN-2001 Door Signals" -> "Door Signals";
+  "VIN-2001 Trip Signals" -> "Trip Signale";
+  "VIN-3001 Shift Signals" -> "Shift Signals";
+  "VIN-3001 Window Signals" -> "Window Signals";
+  "VIN-3001 Door Signals" -> "Door Signals";
+  "VIN-3001 Trip Signals" -> "Trip Signals";
+  "Vehicle OEM" -> "Vehicle Owners";
+  "Trip Signals" -> "OEM Accessible Signals";
+  "Window Signals" -> "Owner Accessible Signals";
+  "Door Signals" -> "Owner Accessible Signals";
+  "Shift Signals" -> "Owner Accessible Signals";
+  "Owner Accessible Signals" -> "OEM Accessible Signals";
+  "Vehicle Owners" -> "Signals Access";
+  "OEM Accessible Signals" -> "Signals Access";
+  "Owner Accessible Signals" -> "Signals Access";
+  "Signals Access" -> PM;
+  "Vehicle Owners" -> "Owner Accessible Signals" [constraint=false,label="[r]",style=dashed,arrowhead=none];
+  "Vehicle OEM" -> "OEM Accessible Signals" [constraint=false,label="[r,w]",style=dashed,arrowhead=none];
+  { rank=same; Sebastian Ana "OEM employee 1" "VIN-1001 Shift Signals" "VIN-1001 Window Signals" "VIN-1001 Door Signals" "VIN-1001 Trip Signals" "VIN-1002 Shift Signals" "VIN-1002 Window Signals" "VIN-1002 Door Signals" "VIN-1002 Trip Signals" "VIN-2001 Shift Signals" "VIN-2001 Window Signals" "VIN-2001 Door Signals" "VIN-2001 Trip Signals" "VIN-3001 Shift Signals" "VIN-3001 Window Signals" "VIN-3001 Door Signals" "VIN-3001 Trip Signals" }
+  { rank=same; "Vehicle OEM" "Shift Signals" "Window Signals" "Door Signals" "Trip Signals" "Shift Signals" "Window Signals" "Door Signals" "Trip Signals" "Shift Signals" "Window Signals" "Door Signals" "Trip Signale" "Shift Signals" "Window Signals" "Door Signals" "Trip Signals" }
+  { rank=same; "Vehicle Owners" "Owner Accessible Signals" "OEM Accessible Signals" }
+  subgraph user_dag {
+    subgraph u_nodes {
+      Sebastian; Ana; "OEM employee 1"; 
+      Sebastian->Ana->"OEM employee 1" [style=invis];
+    }
+    subgraph ua_nodes {
+      "Vehicle Owners"; "Vehicle OEM"; 
+    }
+  }
+  subgraph object_dag {
+    subgraph o_nodes {
+      "VIN-1001 Shift Signals"; "VIN-1001 Window Signals"; "VIN-1001 Door Signals"; "VIN-1001 Trip Signals"; "VIN-1002 Shift Signals"; "VIN-1002 Window Signals"; "VIN-1002 Door Signals"; "VIN-1002 Trip Signals"; "VIN-2001 Shift Signals"; "VIN-2001 Window Signals"; "VIN-2001 Door Signals"; "VIN-2001 Trip Signals"; "VIN-3001 Shift Signals"; "VIN-3001 Window Signals"; "VIN-3001 Door Signals"; "VIN-3001 Trip Signals"; 
+      "VIN-1001 Shift Signals"->"VIN-1001 Window Signals"->"VIN-1001 Door Signals"->"VIN-1001 Trip Signals"->"VIN-1002 Shift Signals"->"VIN-1002 Window Signals"->"VIN-1002 Door Signals"->"VIN-1002 Trip Signals"->"VIN-2001 Shift Signals"->"VIN-2001 Window Signals"->"VIN-2001 Door Signals"->"VIN-2001 Trip Signals"->"VIN-3001 Shift Signals"->"VIN-3001 Window Signals"->"VIN-3001 Door Signals"->"VIN-3001 Trip Signals" [style=invis];
+    }
+    subgraph oa_nodes {
+      "Trip Signals"; "Window Signals"; "Door Signals"; "Shift Signals"; "Owner Accessible Signals"; "OEM Accessible Signals"; 
+    }
+  }
+  subgraph pc_nodes {
+    "Signals Access" [shape=polygon,sides=5];
+  }
+  node [shape=none]
+  "<Objects>"->"<Object Attributes>" [arrowhead=none,style=invis]
+}

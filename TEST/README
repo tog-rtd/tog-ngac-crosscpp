@@ -1,0 +1,4 @@
+Tests numbered with nn-... are the standard tests for ngac/ngac-server/epp
+
+The test cme-test.sh takes one parameter, a port number on which to contact the cme simulator,
+and sends it a context change notification registration.

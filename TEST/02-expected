@@ -1,0 +1,59 @@
+set policy to "none"
+none
+success
+get the policy
+none
+success
+load two policies
+Signals Access Policy
+success
+Vehicle Ownership Policy
+success
+form combined policy
+Combined Policy
+success
+none
+success
+try an access request without setting policy
+no current policy
+failure
+set to Combined Policy
+Combined Policy
+success
+Combined Policy
+success
+running nine test cases for Combined Policy, expecting d g g d d d d d d
+deny
+grant
+grant
+deny
+deny
+deny
+deny
+deny
+deny
+establish sessions
+ana_session
+success
+sebastian_session
+success
+repeat tests with sessions
+deny
+grant
+grant
+deny
+deny
+deny
+deny
+deny
+deny
+end sessions
+session ended
+success
+session ended
+success
+try sebastian_session access now that session ended, expect deny
+deny
+none
+success
+end of Combined Policy curl tests

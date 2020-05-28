@@ -1,0 +1,23 @@
+set policy to deny
+deny
+success
+get the policy
+deny
+success
+run first four test cases
+deny
+deny
+deny
+deny
+set policy to grant
+grant
+success
+get the policy
+grant
+success
+run first four test cases
+grant
+grant
+grant
+grant
+end of curl tests

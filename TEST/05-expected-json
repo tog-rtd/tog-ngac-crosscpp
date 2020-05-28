@@ -1,0 +1,95 @@
+add/delete multiple
+first load ipolicy immediate
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"ipolicy"
+}
+set to ipolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"ipolicy"
+}
+read the policy (explicitly named as ipolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+try to add and delete assign when neither the user or attribute are defined - should fail
+{
+  "respStatus":"failure",
+  "respMessage":"error adding element",
+  "respBody":"assign('User 1',uattr1)"
+}
+{
+  "respStatus":"failure",
+  "respMessage":"error deleting element",
+  "respBody":"assign('User 1',uattr1)"
+}
+try to add and delete user - should succeed
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u3)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u3)"
+}
+try to delete user when already deleted - should fail
+{
+  "respStatus":"failure",
+  "respMessage":"error deleting element",
+  "respBody":"user(u3)"
+}
+read the policy (explicitly named as ipolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+try a legitimate sequence of add/delete operations
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u4)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u4)"
+}
+read the policy (explicitly named as ipolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+try legitimate add/delete multiple operations
+{
+  "respStatus":"success",
+  "respMessage":"elements deleted",
+  "respBody":"[assign(u1,ua1),user(u1)]"
+}
+read the policy (two elements removed)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+add two elements back
+{
+  "respStatus":"success",
+  "respMessage":"elements added",
+  "respBody":"[user(u1),assign(u1,ua1)]"
+}
+read the policy (should be restored to original - except for order)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  assign(u1,ua1),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+end of add delete multiple tests

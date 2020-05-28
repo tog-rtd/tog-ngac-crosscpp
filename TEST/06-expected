@@ -1,0 +1,85 @@
+Signals Access Policy
+success
+Vehicle Ownership Policy
+success
+Combined Policy
+success
+set to Combined Policy
+Combined Policy
+success
+Combined Policy
+success
+try to add and delete assign when neither the user or attribute are defined - should fail
+error adding element
+failure
+error deleting element
+failure
+try to add and delete user - should succeed
+element added
+success
+element deleted
+success
+try to delete user when already deleted - should fail
+error deleting element
+failure
+try a legitimate sequence of 12 add/delete operations
+element added
+success
+element deleted
+success
+element deleted
+success
+element deleted
+success
+element added
+success
+element added
+success
+element deleted
+success
+element deleted
+success
+element added
+success
+element added
+success
+element deleted
+success
+element deleted
+success
+add assign should fail because user no longer exists
+error adding element
+failure
+add the user back and then the add assign succeeds
+element added
+success
+element added
+success
+get current policy
+Combined Policy
+success
+load a new policy
+Policy3
+success
+Combined Policy
+success
+set to the newly loaded policy
+Policy3
+success
+Policy3
+success
+access checks, expect g d g g d
+grant
+deny
+grant
+grant
+deny
+unload the policy
+policy unloaded
+success
+now what is the current policy
+none
+success
+an access request with no current policy
+no current policy
+failure
