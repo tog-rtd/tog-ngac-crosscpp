@@ -1,0 +1,4 @@
+if [ ! -e ngac-server ]; then
+	./mkngac ;
+fi;
+./ngac-server --import EXAMPLES/policy1.pl --port 8001 --jsonresp &
