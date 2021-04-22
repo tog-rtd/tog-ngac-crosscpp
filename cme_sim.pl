@@ -16,6 +16,8 @@
 
 ccpp([context_notification_registration]). % CME API
 
+cme :- cme(8002).
+
 cme(Port) :-
 	format('CME sim starting~n'),
 	http_server(http_dispatch, [port(Port)]),

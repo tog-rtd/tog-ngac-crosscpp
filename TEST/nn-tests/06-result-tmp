@@ -1,0 +1,204 @@
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded",
+  "respBody":"Signals Access Policy"
+}
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded",
+  "respBody":"Vehicle Ownership Policy"
+}
+{
+  "respStatus":"success",
+  "respMessage":"policies combined",
+  "respBody":"Combined Policy"
+}
+set to Combined Policy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"Combined Policy"
+}
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Combined Policy"
+}
+try to add and delete assign when neither the user or attribute are defined - should fail
+{
+  "respStatus":"failure",
+  "respMessage":"error adding element",
+  "respBody":"assign('User 1',uattr1)"
+}
+{
+  "respStatus":"failure",
+  "respMessage":"error deleting element",
+  "respBody":"assign('User 1',uattr1)"
+}
+try to add and delete user - should succeed
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u3)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u3)"
+}
+try to delete user when already deleted - should fail
+{
+  "respStatus":"failure",
+  "respMessage":"error deleting element",
+  "respBody":"user(u3)"
+}
+try a legitimate sequence of 12 add/delete operations
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u4)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u4)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"assign(u2,'Group2')"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u2)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u2)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"assign(u2,'Group2')"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"assign(u2,'Group2')"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u2)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u2)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"assign(u2,'Group2')"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"assign(u2,'Group2')"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element deleted",
+  "respBody":"user(u2)"
+}
+add assign should fail because user no longer exists
+{
+  "respStatus":"failure",
+  "respMessage":"error adding element",
+  "respBody":"assign(u2,'Group2')"
+}
+add the user back and then the add assign succeeds
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"user(u2)"
+}
+{
+  "respStatus":"success",
+  "respMessage":"element added",
+  "respBody":"assign(u2,'Group2')"
+}
+get current policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Combined Policy"
+}
+load a new policy
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded",
+  "respBody":"Policy3"
+}
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Combined Policy"
+}
+set to the newly loaded policy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"Policy3"
+}
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Policy3"
+}
+access checks, expect g d g g d
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"jones,read,mrec1"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"jones,write,mrec1"
+}
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"smith,write,mrec1"
+}
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"smith,read,mrec1"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"smith,read,'Medical Records'"
+}
+unload the policy
+{
+  "respStatus":"success",
+  "respMessage":"policy unloaded",
+  "respBody":"Policy3"
+}
+now what is the current policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"none"
+}
+an access request with no current policy
+{
+  "respStatus":"failure",
+  "respMessage":"no current policy",
+  "respBody":""
+}

@@ -157,8 +157,8 @@ tcc11 :- access_check('CondPolicy1',(u2,r,o1)).
 tcc12 :- \+ access_check('CondPolicy1',(u2,w,o1)).
 tcc13 :- access_check('CondPolicy1',(u2,r,o2)).
 tcc14 :- access_check('CondPolicy1',(u2,w,o2)).
-tcc15 :- access_check('CondPolicy1',(u2,r,o3)).
-tcc16 :- access_check('CondPolicy1',(u2,w,o3)).
+tcc15 :- access_check('CondPolicy1',(u2,r,o3)). % succeeds on weekday == true
+tcc16 :- access_check('CondPolicy1',(u2,w,o3)). % succeeds on weekday == true
 tcc17 :- \+ access_check('CondPolicy1',(u2,r,o4)).
 tcc18 :- \+ access_check('CondPolicy1',(u2,w,o4)).
 

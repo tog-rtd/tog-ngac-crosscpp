@@ -1,0 +1,50 @@
+strict digraph "Policy (b)" {
+  node [shape=none]
+  APC [label="",width=0,height=0];
+  "<Users>"->"<User Attributes>" [arrowhead=none,style=invis];
+  "<User Attributes>"->APC [arrowhead=none,style=invis];
+  APC->"<Policy Classes>" [arrowhead=none,style=invis];
+  node [shape=ellipse]
+  u1 [peripheries=2];  u2 [peripheries=2];
+  o2;  o3;  o4;
+  u1 -> Alice;
+  u2 -> Bob;
+  o2 -> Proposals;
+  o3 -> Reports;
+  o4 -> Reports;
+  Alice -> Users;
+  Bob -> Users;
+  Proposals -> "Bob Home";
+  Reports -> "Bob Home";
+  Users -> "File Management";
+  "Bob Home" -> "File Management";
+  "File Management" -> PM;
+  Bob -> "Bob Home" [constraint=false,label="[r,w]",style=dashed,arrowhead=none];
+  Alice -> o2 [constraint=false,label="[r,w]",style=dashed,arrowhead=none];
+  { rank=same; u1 u2 o2 o3 o4 }
+  { rank=same; Alice Bob Proposals Reports Reports }
+  { rank=same; Users "Bob Home" }
+  subgraph user_dag {
+    subgraph u_nodes {
+      u1; u2; 
+      u1->u2 [style=invis];
+    }
+    subgraph ua_nodes {
+      Alice; Bob; Users; 
+    }
+  }
+  subgraph object_dag {
+    subgraph o_nodes {
+      o2; o3; o4; 
+      o2->o3->o4 [style=invis];
+    }
+    subgraph oa_nodes {
+      Proposals; Reports; "Bob Home"; 
+    }
+  }
+  subgraph pc_nodes {
+    "File Management" [shape=polygon,sides=5];
+  }
+  node [shape=none]
+  "<Objects>"->"<Object Attributes>" [arrowhead=none,style=invis]
+}

@@ -3,7 +3,7 @@
 % all parameters should be defined here
 %
 :- module(param, [setparam/2,
-                  debug/1, statusprt/1,
+                  debug/1, statusprt/1, guitracer/1, guiserver/1,
 		  self_test/1, regression_test/1, initialize/1, verbose/1,
 		  initialized/1, epp_initialized/1, user_level/1, settable_params/1,
 		  self_test_modules/1, regression_test_modules/1,
@@ -53,9 +53,14 @@ ngac_version('0.3.4+', 'multi-domain access control policies and access queries'
 ngac_version('0.3.5', 'paapi audit, local log, factor server, other improvements' ).
 ngac_version('0.4.1', 'EPP modules for conditional policy rules and context adaptation').
 ngac_version('0.4.2', 'EPP snapshot distribution' ).
+ngac_version('0.4.3', 'final EPP features and interfaces; accessm; json option' ).
+ngac_version('0.4.3', 'final EPP features and interfaces; accessm; json option' ).
+ngac_version('0.4.4', 'enhanced date and time conditions' ).
+ngac_version('0.4.5', 'conditional queries').
+ngac_version('0.4.6', 'pqapi/users who can access an object; conditional query variable substitutions').
 
-ngac_version('0.4.3' /* ongoing development */ ).
-ngac_current_version_description('finalization of EPP features and interfaces; json option').
+ngac_version('0.4.7' /* ongoing development */ ).
+ngac_current_version_description('resets').
 
 ngac_name('TOG-NGAC','TOG-ngac').
 
@@ -63,7 +68,7 @@ ngac_name('TOG-NGAC','TOG-ngac').
 %
 % enter new params both in dynamic directive and settable_params
 %
-:- dynamic debug/1, statusprt/1, self_test/1, current_policy/1,
+:- dynamic debug/1, statusprt/1, guitracer/1, guiserver/1, self_test/1, current_policy/1,
 	regression_test/1, initialize/1, initialized/1, epp_initialized/1, verbose/1,
 	user_level/1, current_policy/1, pqapi_port/1, paapi_port/1, gpqapi_port/1,
         admin_token/1, audit_logging/1, audit_stream/1, audit_selection/1,
@@ -73,7 +78,7 @@ ngac_name('TOG-NGAC','TOG-ngac').
         jsonresp_epp/1, jsonresp_server/1, jsonresp/1,
 	serverhost_ip/1, crosscpp_url/1, crosscpp_sim/1.
 
-settable_params([debug,self_test,statusprt,initialize,initialized,regression_test,verbose,
+settable_params([debug,self_test,statusprt,guitracer,guiserver,initialize,initialized,regression_test,verbose,
 		 user_level,current_policy,pqapi_port,paapi_port,gpqapi_port,admin_token,
 		 audit_logging,audit_stream,audit_selection, current_gpolicy, current_cpolicy,
                  current_erp, epp_initialized, epp_status,
@@ -90,6 +95,8 @@ setparam(_,_).
 
 debug(off). % off/on
 statusprt(off). % off/on
+guitracer(off). % off/on
+guiserver(off). % off/on
 self_test(off). % off/on
 regression_test(off). % off/on
 null_stream(x).

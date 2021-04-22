@@ -1,0 +1,122 @@
+demo marketplace policy
+reset conditions before tests are run
+{
+  "respStatus":"success",
+  "respMessage":"reset conditions",
+  "respBody":"all"
+}
+first load immediate the core market_policy mpolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"mpolicy"
+}
+set current policy to mpolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"mpolicy"
+}
+read the policy (explicitly named as mpolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(mpolicy, market_policy, [\n  user_attribute(sp_5f1aa9f638189e22005d0f39),\n  object('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4'),\n  object_attribute(owner_1),\n  policy_class(market_policy),\n  connector('PM'),\n  assign(market_policy,'PM'),\n  assign(sp_5f1aa9f638189e22005d0f39,market_policy),\n  assign(owner_1,market_policy),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',owner_1)\n]).\n"
+}
+install an offer: condition variables, condition predicate and aeon channel as user
+{
+  "respStatus":"success",
+  "respMessage":"cond elements added",
+  "respBody":"dynamic"
+}
+read the conditions
+{
+  "respStatus":"success",
+  "respMessage":"read conditions",
+  "respBody":"conditions(dynamic):\n  condition_variable(devid:name).\n  condition_variable(mchan:number).\n  condition_variable(tstart:timetext).\n  condition_variable(tstop:timetext).\n  condition_variable(tsubmit:timetext).\n  condition_variable(loMin:number).\n  condition_variable(loMax:number).\n  condition_variable(laMin:number).\n  condition_variable(laMax:number).\n  condition_predicate(dr_offer_5f5a39f2b559dcf200f424d0,[name,number,timetext,timetext,timetext,number,number,number,number]).\n:- dynamic dr_offer_5f5a39f2b559dcf200f424d0/9.\n\ndr_offer_5f5a39f2b559dcf200f424d0(A, B, C, D, E, F, G, H, I) :-\n    A=='95b40cf9-a9fc-4bd8-b695-99773b6f25e4',\n    channel_in_channels(B, [1, 2]),\n    timetextrange_in_range(C,\n                           D,\n                           '2019-09-10T14:36:34.682Z',\n                           '2020-09-10T14:36:34.682Z'),\n    timetext_in_range(E,\n                      '2019-09-10T14:36:34.682Z',\n                      '2020-09-10T14:36:34.682Z'),\n    gbox_in_gbox(F, G, H, I, -9.39, 4.3, 35.95, 43.75).\n\n"
+}
+add the aeon channel for an offer
+{
+  "respStatus":"success",
+  "respMessage":"elements added",
+  "respBody":"[user(achnl_5f5a39f20463e50012bca2c3),assign(achnl_5f5a39f20463e50012bca2c3,sp_5f1aa9f638189e22005d0f39)]"
+}
+read the policy (explicitly named as mpolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(mpolicy, market_policy, [\n  user(achnl_5f5a39f20463e50012bca2c3),\n  user_attribute(sp_5f1aa9f638189e22005d0f39),\n  object('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4'),\n  object_attribute(owner_1),\n  policy_class(market_policy),\n  connector('PM'),\n  assign(market_policy,'PM'),\n  assign(sp_5f1aa9f638189e22005d0f39,market_policy),\n  assign(owner_1,market_policy),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',owner_1),\n  assign(achnl_5f5a39f20463e50012bca2c3,sp_5f1aa9f638189e22005d0f39)\n]).\n"
+}
+now add a contract to the policy
+{
+  "respStatus":"success",
+  "respMessage":"elements added",
+  "respBody":"[user_attribute(ua_cntr_5f3fa521b1782447069c2649),object_attribute(oa_cntr_5f3fa521b1782447069c2649),assign(achnl_5f5a39f20463e50012bca2c3,ua_cntr_5f3fa521b1782447069c2649),assign(ua_cntr_5f3fa521b1782447069c2649,sp_5f1aa9f638189e22005d0f39),assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',oa_cntr_5f3fa521b1782447069c2649),assign(oa_cntr_5f3fa521b1782447069c2649,owner_1),cond(dr_offer_5f5a39f2b559dcf200f424d0(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax),associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649))]"
+}
+read the policy (explicitly named as mpolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(mpolicy, market_policy, [\n  user(achnl_5f5a39f20463e50012bca2c3),\n  user_attribute(sp_5f1aa9f638189e22005d0f39),\n  user_attribute(ua_cntr_5f3fa521b1782447069c2649),\n  object('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4'),\n  object_attribute(owner_1),\n  object_attribute(oa_cntr_5f3fa521b1782447069c2649),\n  policy_class(market_policy),\n  connector('PM'),\n  assign(market_policy,'PM'),\n  assign(sp_5f1aa9f638189e22005d0f39,market_policy),\n  assign(owner_1,market_policy),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',owner_1),\n  assign(achnl_5f5a39f20463e50012bca2c3,sp_5f1aa9f638189e22005d0f39),\n  assign(achnl_5f5a39f20463e50012bca2c3,ua_cntr_5f3fa521b1782447069c2649),\n  assign(ua_cntr_5f3fa521b1782447069c2649,sp_5f1aa9f638189e22005d0f39),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',oa_cntr_5f3fa521b1782447069c2649),\n  assign(oa_cntr_5f3fa521b1782447069c2649,owner_1),\n  associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649),\n  cond(dr_offer_5f5a39f2b559dcf200f424d0(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax), associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649))\n]).\n"
+}
+query the policy for aeon channels eligible to receive a datapackage arriving from the owner device
+{
+  "respStatus":"success",
+  "respMessage":"users('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4')",
+  "respBody":"[achnl_5f5a39f20463e50012bca2c3]"
+}
+add the aeon channel for a new offer
+{
+  "respStatus":"success",
+  "respMessage":"elements added",
+  "respBody":"[user(achnl_6g6b40g31574f61123cdb3d4),assign(achnl_6g6b40g31574f61123cdb3d4,sp_5f1aa9f638189e22005d0f39)]"
+}
+install an additional offer: condition variables, condition predicate and aeon channel as user
+{
+  "respStatus":"success",
+  "respMessage":"cond elements added",
+  "respBody":"dynamic"
+}
+read the conditions
+{
+  "respStatus":"success",
+  "respMessage":"read conditions",
+  "respBody":"conditions(dynamic):\n  condition_variable(devid:name).\n  condition_variable(mchan:number).\n  condition_variable(tstart:timetext).\n  condition_variable(tstop:timetext).\n  condition_variable(tsubmit:timetext).\n  condition_variable(loMin:number).\n  condition_variable(loMax:number).\n  condition_variable(laMin:number).\n  condition_variable(laMax:number).\n  condition_predicate(dr_offer_5f5a39f2b559dcf200f424d0,[name,number,timetext,timetext,timetext,number,number,number,number]).\n  condition_predicate(dr_offer_6f7b48g3c660edg311g535e1,[name,number,timetext,timetext,timetext,number,number,number,number]).\n:- dynamic dr_offer_5f5a39f2b559dcf200f424d0/9.\n\ndr_offer_5f5a39f2b559dcf200f424d0(A, B, C, D, E, F, G, H, I) :-\n    A=='95b40cf9-a9fc-4bd8-b695-99773b6f25e4',\n    channel_in_channels(B, [1, 2]),\n    timetextrange_in_range(C,\n                           D,\n                           '2019-09-10T14:36:34.682Z',\n                           '2020-09-10T14:36:34.682Z'),\n    timetext_in_range(E,\n                      '2019-09-10T14:36:34.682Z',\n                      '2020-09-10T14:36:34.682Z'),\n    gbox_in_gbox(F, G, H, I, -9.39, 4.3, 35.95, 43.75).\n\n:- dynamic dr_offer_6f7b48g3c660edg311g535e1/9.\n\ndr_offer_6f7b48g3c660edg311g535e1(A, B, C, D, E, F, G, H, I) :-\n    A=='95b40cf9-a9fc-4bd8-b695-99773b6f25e4',\n    channel_in_channels(B, [2]),\n    timetextrange_in_range(C,\n                           D,\n                           '2019-09-10T14:36:34.682Z',\n                           '2020-09-10T14:36:34.682Z'),\n    timetext_in_range(E,\n                      '2019-09-10T14:36:34.682Z',\n                      '2020-09-10T14:36:34.682Z'),\n    gbox_in_gbox(F, G, H, I, -9.39, 4.3, 35.95, 43.75).\n\n"
+}
+read the policy (explicitly named as mpolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(mpolicy, market_policy, [\n  user(achnl_5f5a39f20463e50012bca2c3),\n  user(achnl_6g6b40g31574f61123cdb3d4),\n  user_attribute(sp_5f1aa9f638189e22005d0f39),\n  user_attribute(ua_cntr_5f3fa521b1782447069c2649),\n  object('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4'),\n  object_attribute(owner_1),\n  object_attribute(oa_cntr_5f3fa521b1782447069c2649),\n  policy_class(market_policy),\n  connector('PM'),\n  assign(market_policy,'PM'),\n  assign(sp_5f1aa9f638189e22005d0f39,market_policy),\n  assign(owner_1,market_policy),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',owner_1),\n  assign(achnl_5f5a39f20463e50012bca2c3,sp_5f1aa9f638189e22005d0f39),\n  assign(achnl_5f5a39f20463e50012bca2c3,ua_cntr_5f3fa521b1782447069c2649),\n  assign(ua_cntr_5f3fa521b1782447069c2649,sp_5f1aa9f638189e22005d0f39),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',oa_cntr_5f3fa521b1782447069c2649),\n  assign(oa_cntr_5f3fa521b1782447069c2649,owner_1),\n  assign(achnl_6g6b40g31574f61123cdb3d4,sp_5f1aa9f638189e22005d0f39),\n  associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649),\n  cond(dr_offer_5f5a39f2b559dcf200f424d0(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax), associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649))\n]).\n"
+}
+now add a contract to the policy for the new offer
+{
+  "respStatus":"success",
+  "respMessage":"elements added",
+  "respBody":"[user_attribute(ua_cntr_6g4gb632c2893558170d3750),object_attribute(oa_cntr_6g4gb632c2893558170d3750),assign(achnl_6g6b40g31574f61123cdb3d4,ua_cntr_6g4gb632c2893558170d3750),assign(ua_cntr_6g4gb632c2893558170d3750,sp_5f1aa9f638189e22005d0f39),assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',oa_cntr_6g4gb632c2893558170d3750),assign(oa_cntr_6g4gb632c2893558170d3750,owner_1),cond(dr_offer_6f7b48g3c660edg311g535e1(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax),associate(ua_cntr_6g4gb632c2893558170d3750,[r],oa_cntr_6g4gb632c2893558170d3750))]"
+}
+read the policy (explicitly named as mpolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(mpolicy, market_policy, [\n  user(achnl_5f5a39f20463e50012bca2c3),\n  user(achnl_6g6b40g31574f61123cdb3d4),\n  user_attribute(sp_5f1aa9f638189e22005d0f39),\n  user_attribute(ua_cntr_5f3fa521b1782447069c2649),\n  user_attribute(ua_cntr_6g4gb632c2893558170d3750),\n  object('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4'),\n  object_attribute(owner_1),\n  object_attribute(oa_cntr_5f3fa521b1782447069c2649),\n  object_attribute(oa_cntr_6g4gb632c2893558170d3750),\n  policy_class(market_policy),\n  connector('PM'),\n  assign(market_policy,'PM'),\n  assign(sp_5f1aa9f638189e22005d0f39,market_policy),\n  assign(owner_1,market_policy),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',owner_1),\n  assign(achnl_5f5a39f20463e50012bca2c3,sp_5f1aa9f638189e22005d0f39),\n  assign(achnl_5f5a39f20463e50012bca2c3,ua_cntr_5f3fa521b1782447069c2649),\n  assign(ua_cntr_5f3fa521b1782447069c2649,sp_5f1aa9f638189e22005d0f39),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',oa_cntr_5f3fa521b1782447069c2649),\n  assign(oa_cntr_5f3fa521b1782447069c2649,owner_1),\n  assign(achnl_6g6b40g31574f61123cdb3d4,sp_5f1aa9f638189e22005d0f39),\n  assign(achnl_6g6b40g31574f61123cdb3d4,ua_cntr_6g4gb632c2893558170d3750),\n  assign(ua_cntr_6g4gb632c2893558170d3750,sp_5f1aa9f638189e22005d0f39),\n  assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',oa_cntr_6g4gb632c2893558170d3750),\n  assign(oa_cntr_6g4gb632c2893558170d3750,owner_1),\n  associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649),\n  associate(ua_cntr_6g4gb632c2893558170d3750,[r],oa_cntr_6g4gb632c2893558170d3750),\n  cond(dr_offer_5f5a39f2b559dcf200f424d0(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax), associate(ua_cntr_5f3fa521b1782447069c2649,[r],oa_cntr_5f3fa521b1782447069c2649)),\n  cond(dr_offer_6f7b48g3c660edg311g535e1(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax), associate(ua_cntr_6g4gb632c2893558170d3750,[r],oa_cntr_6g4gb632c2893558170d3750))\n]).\n"
+}
+query the policy for aeon channels eligible to receive a datapackage arriving from the owner device channel 2
+{
+  "respStatus":"success",
+  "respMessage":"users('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4')",
+  "respBody":"[achnl_5f5a39f20463e50012bca2c3,achnl_6g6b40g31574f61123cdb3d4]"
+}
+another query for a different datapackage arriving from the owner device channel 1
+{
+  "respStatus":"success",
+  "respMessage":"users('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4')",
+  "respBody":"[achnl_5f5a39f20463e50012bca2c3]"
+}
+reset conditions before other tests are run
+{
+  "respStatus":"success",
+  "respMessage":"reset conditions",
+  "respBody":"all"
+}
+end marketplace demo tests

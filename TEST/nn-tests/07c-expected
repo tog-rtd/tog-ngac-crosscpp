@@ -1,0 +1,40 @@
+Conditional Query Test
+load immediate cpolicy
+cpolicy
+success
+set to cpolicy
+cpolicy
+success
+run test cases for cpolicy without a condition, expect: deny deny deny
+deny
+deny
+deny
+re-run test cases for cpolicy with condition using caccess call, expect: grant grant deny
+grant
+grant
+deny
+re-run test cases for cpolicy with condition added to ordinary access call, expect: grant grant deny
+grant
+grant
+deny
+------------------------------
+load immediate cpolicy2
+cpolicy2
+success
+set to cpolicy2
+cpolicy2
+success
+run test cases for cpolicy2 without a condition specified in the query
+if it is not a weekday expect: deny deny deny; if it is a weekday expect: grant grant deny
+grant
+grant
+deny
+re-run test cases for cpolicy with condition using caccess call, expect: grant grant deny
+grant
+grant
+deny
+re-run test cases for cpolicy2 with condition added to ordinary access call, expect: grant grant deny
+grant
+grant
+deny
+end of Conditional Query Test

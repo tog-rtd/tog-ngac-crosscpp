@@ -1,0 +1,44 @@
+pqapi/users tests
+set to Policy (a)
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"Policy (a)"
+}
+run users test cases for objects in Policy (a)
+expect o1=[(u1,[r,w]),(u2,[r])], o2=[(u1,[r]),(u2,[r,w])], o3=[(u2,[r,w])] o4=failure
+{
+  "respStatus":"success",
+  "respMessage":"users",
+  "respBody":"[(u1,[r,w]),(u2,[r])]"
+}
+{
+  "respStatus":"success",
+  "respMessage":"users",
+  "respBody":"[(u1,[r]),(u2,[r,w])]"
+}
+{
+  "respStatus":"success",
+  "respMessage":"users",
+  "respBody":"[(u2,[r,w])]"
+}
+{"respStatus":"failure", "respMessage":"users", "respBody":"o4"}
+run users test cases for objects in Policy (b)
+expect o1=[(u1,[r,w]),(u2,[r])] o2=[(u1,[r]),(u2,[r,w])] o3=[(u2,[r,w])] o4=failure
+{
+  "respStatus":"success",
+  "respMessage":"users",
+  "respBody":"[(u1,[r,w]),(u2,[r])]"
+}
+{
+  "respStatus":"success",
+  "respMessage":"users",
+  "respBody":"[(u1,[r]),(u2,[r,w])]"
+}
+{
+  "respStatus":"success",
+  "respMessage":"users",
+  "respBody":"[(u2,[r,w])]"
+}
+{"respStatus":"failure", "respMessage":"users", "respBody":"o4"}
+end of users tests

@@ -7,6 +7,17 @@
 %%	NGAC Command Procs
 % sequences of commands defined in command module
 
+proc(guiserver, [
+         set(guiserver,on),
+         guitracer,
+         set(jsonresp_server,on),
+         set(jsonresp,on),
+         set(no_sleep,on),
+         traceone,
+         server(8001),
+         echo(ready)
+     ]).
+
 proc(review, [ %
          proc(queryA),
          proc(queryB),
@@ -138,6 +149,17 @@ proc(demo2, [ % convert a declarative policy file to a PM command file
 proc(demo3, [ %
 	 combine('Policy (a)','Policy (b)','Policy (ab)'),
 	 dps('Policy (ab)')
+     ]).
+
+proc(marketdemo, [ % demo the market policy
+         setpol(mpolicy1),
+         load_cond('EXAMPLES/market_cond.pl'),
+         users('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4',r,
+               [devid='95b40cf9-a9fc-4bd8-b695-99773b6f25e4', mchan=2,
+                tstart='2020-09-08T08:00:00Z', tstop='2020-09-09T08:00:00Z', tsubmit='2020-09-09T08:03:22.350069Z',
+                loMin=3.419216, loMax=3.519216, laMin=40.062069, laMax=40.072069]
+              ),
+         noop
      ]).
 
 proc(test_echo, [

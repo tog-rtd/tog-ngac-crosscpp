@@ -1,0 +1,177 @@
+set policy to "none"
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"none"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"none"
+}
+load two policies
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded",
+  "respBody":"Signals Access Policy"
+}
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded",
+  "respBody":"Vehicle Ownership Policy"
+}
+form combined policy
+{
+  "respStatus":"success",
+  "respMessage":"policies combined",
+  "respBody":"Combined Policy"
+}
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"none"
+}
+try an access request without setting policy
+{
+  "respStatus":"failure",
+  "respMessage":"no current policy",
+  "respBody":""
+}
+set to Combined Policy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"Combined Policy"
+}
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"Combined Policy"
+}
+running nine test cases for Combined Policy, expecting d g g d d d d d d
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',r,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"'Sebastian',r,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"'Ana',r,'VIN-3001 Shift Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',r,'VIN-1001 Trip Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',r,'VIN-3001 Trip Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',w,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',w,'VIN-3001 Shift Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',w,'VIN-1001 Trip Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"'Ana',w,'VIN-3001 Trip Signals'"
+}
+establish sessions
+{
+  "respStatus":"success",
+  "respMessage":"session initialized",
+  "respBody":"ana_session"
+}
+{
+  "respStatus":"success",
+  "respMessage":"session initialized",
+  "respBody":"sebastian_session"
+}
+repeat tests with sessions
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),r,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"session('Sebastian'),r,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"grant",
+  "respBody":"session('Ana'),r,'VIN-3001 Shift Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),r,'VIN-1001 Trip Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),r,'VIN-3001 Trip Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),w,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),w,'VIN-3001 Shift Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),w,'VIN-1001 Trip Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"session('Ana'),w,'VIN-3001 Trip Signals'"
+}
+end sessions
+{
+  "respStatus":"success",
+  "respMessage":"session ended",
+  "respBody":"ana_session"
+}
+{
+  "respStatus":"success",
+  "respMessage":"session ended",
+  "respBody":"sebastian_session"
+}
+try sebastian_session access now that session ended, expect deny
+{
+  "respStatus":"success",
+  "respMessage":"deny",
+  "respBody":"sebastian_session,r,'VIN-1001 Door Signals'"
+}
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"none"
+}
+end of Combined Policy curl tests

@@ -1,0 +1,53 @@
+strict digraph "Policy (a)" {
+  node [shape=none]
+  APC [label="",width=0,height=0];
+  "<Users>"->"<User Attributes>" [arrowhead=none,style=invis];
+  "<User Attributes>"->APC [arrowhead=none,style=invis];
+  APC->"<Policy Classes>" [arrowhead=none,style=invis];
+  node [shape=ellipse]
+  u1 [peripheries=2];  u2 [peripheries=2];
+  o1;  o2;  o3;
+  u1 -> Group1;
+  u2 -> Group2;
+  o1 -> Project1;
+  o2 -> Project2;
+  o3 -> "Gr2-Secret";
+  Group1 -> Division;
+  Group2 -> Division;
+  Project1 -> Projects;
+  Project2 -> Projects;
+  Division -> "Project Access";
+  Projects -> "Project Access";
+  "Gr2-Secret" -> "Project Access";
+  "Project Access" -> PM;
+  Group1 -> Project1 [constraint=false,label="[w]",style=dashed,arrowhead=none];
+  Group2 -> Project2 [constraint=false,label="[w]",style=dashed,arrowhead=none];
+  Group2 -> "Gr2-Secret" [constraint=false,label="[r,w]",style=dashed,arrowhead=none];
+  Division -> Projects [constraint=false,label="[r]",style=dashed,arrowhead=none];
+  { rank=same; u1 u2 o1 o2 o3 }
+  { rank=same; Group1 Group2 Project1 Project2 }
+  { rank=same; Division "Gr2-Secret" Projects }
+  subgraph user_dag {
+    subgraph u_nodes {
+      u1; u2; 
+      u1->u2 [style=invis];
+    }
+    subgraph ua_nodes {
+      Group1; Group2; Division; 
+    }
+  }
+  subgraph object_dag {
+    subgraph o_nodes {
+      o1; o2; o3; 
+      o1->o2->o3 [style=invis];
+    }
+    subgraph oa_nodes {
+      Project1; Project2; "Gr2-Secret"; Projects; 
+    }
+  }
+  subgraph pc_nodes {
+    "Project Access" [shape=polygon,sides=5];
+  }
+  node [shape=none]
+  "<Objects>"->"<Object Attributes>" [arrowhead=none,style=invis]
+}

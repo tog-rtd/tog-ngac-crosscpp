@@ -7,7 +7,7 @@
 	        cc_external_attribute/2, cc_local_cloud_gateway/3,
 		policy_class/2,
 		load_decl_policy/2, load_decl_policy_immediate/2, save_decl_policy/2,
-		object_oattribute/2, object/2, object/8,
+		object_oattribute/2, object_oattribute_nd/2, object/2, object/8,
 		user_uattribute/2, user/2,
 	        decl2imp/2, imp2decl/3,
 		cmdTerms2policy/2,
@@ -161,6 +161,7 @@ unpack_policy( cc_policy(CCpolicyName,CCpolicyElements) ) :-
 	unpack_cpolicy_elements(CCpolicyName,CCpolicyElements), !,
 	perform_static_cpolicy_checks(CCpolicyName).
 
+% note that PName below is P:PC
 unpack_policy_elements(_,[]).
 unpack_policy_elements(PName,[assign(I,A)|PolElts]) :- !,
 	assertz( assign(PName,I,A) ),
@@ -261,6 +262,14 @@ perform_static_policy_checks(PName) :-
 	;   format('Condition check for policy ~q failed.~n',PName)
 	),
 	% check that operations used are valid for the object class
+	perform_object_class_check(PName),
+	% check that assignment arguments are defined
+	perform_assignments_check(PName),
+	% check that association arguments are defined
+	perform_associations_check(PName),
+	% check that the graph is connected
+	perform_connectedness_check(PName),
+	% check that given policy root occurs as a PC in the policy
 	true.
 
 perform_static_gpolicy_checks(_).
@@ -281,14 +290,30 @@ perform_condition_check(_).
 condition_predicate_check(PredName,DeclaredPredicates) :-
 	member(C,DeclaredPredicates), functor(C,PredName,_).
 
+perform_object_class_check(_PName).
+% check that operations are defined and not used in places they shouldn't be used
+
+perform_assignments_check(_PName).
+% check that the arguments of an assignment are defined and compatible
+
+perform_associations_check(_PName).
+% check that the arguments of an association are defined and compatible
+
+perform_connectedness_check(_PName).
+% check that the graph does not have disconnected components
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+object_oattribute(P,O) :- var(O), !, object_oattribute_nd(P,O).
 
 object_oattribute(P,O) :- element(P,object(O)), !.
 object_oattribute(P,O) :- element(P,object(O,_,_,_,_,_,_)), !.
 object_oattribute(P,O) :- element(P,object_attribute(O)).
+
+object_oattribute_nd(P,O) :- element(P,object(O)).
+object_oattribute_nd(P,O) :- element(P,object(O,_,_,_,_,_,_)).
+object_oattribute_nd(P,O) :- element(P,object_attribute(O)).
 
 object(P,O) :- element(P,object(O)).
 object(P,O) :- element(P,object(O,_,_,_,_,_,_)).

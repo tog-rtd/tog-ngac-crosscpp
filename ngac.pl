@@ -2,7 +2,7 @@
 
 :- module(ngac, [ngac/0,ngac/1,ngac/4,ngac_server/0,epp_server/0]).
 :- use_module([
-       param,command,common,pio,policies,
+       param,command,pio,policies,
        test,procs,pmcmd,
        dpl,server,pqapi,paapi,pap,pdp,jsonresp,
        % pip,
@@ -55,7 +55,9 @@ ngac(Selftest,Regression,Init,Verbose) :-
 	->  regression_test_all
 	;   true ),
 
-	% guitracer,
+	(   param:guitracer(on)
+	->  guitracer
+	;   true ),
 
 	param:prompt_string(Prompt),
 	command:tl(Prompt). % run the top-level ngac command interpreter

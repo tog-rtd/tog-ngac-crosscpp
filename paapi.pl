@@ -4,6 +4,7 @@
 :- use_module(audit,[audit_gen/2]).
 :- use_module(param).
 :- use_module(dpl).
+%:- use_module(dpl_conditions).
 :- use_module(sessions).
 :- use_module(pap).
 :- use_module(jsonresp).
@@ -30,6 +31,11 @@
 :- http_handler(root(paapi/readpol), paapi_readpol, [prefix]).
 :- http_handler(root(paapi/purgepol), paapi_unloadpol, [prefix]).
 :- http_handler(root(paapi/unload), paapi_unloadpol, [prefix]).
+:- http_handler(root(paapi/loadcondi), paapi_loadcondi, [prefix]).
+:- http_handler(root(paapi/unloadcondi), paapi_unloadcondi, [prefix]).
+:- http_handler(root(paapi/readcond), paapi_readcond, [prefix]).
+:- http_handler(root(paapi/reset), paapi_reset, [prefix]).
+:- http_handler(root(paapi/resetcond), paapi_resetcond, [prefix]).
 :- http_handler(root(paapi/initsession), paapi_initsession, [prefix]).
 :- http_handler(root(paapi/endsession), paapi_endsession, [prefix]).
 
@@ -40,7 +46,8 @@
 :- http_handler(root(gpaapi/setgpol), gpaapi_setgpol, [prefix]).
 
 % POLICY ADMIN APIs
-paapi([add,delete,getpol,setpol,combinepol,load,loadi,importpol,unload,purgepol,initsession,endsession]).
+paapi([add,delete,getpol,setpol,combinepol,load,loadi,readpol,importpol,purgepol,unload,
+       loadcondi,unloadcondi,readcond,resetcond,reset,initsession,endsession]).
 
 % GLOBAL POLICY ADMIN APIs
 gpaapi([getgpol,setgpol]).
@@ -119,17 +126,18 @@ paapi_addm(Request) :-
 	catch(
 	    http_parameters(Request,[policy(Policy,[atom]),
 				     policy_elements(EltListAtom,[atom]),
+				     name(Name,[atom,optional(true)]),
 				     token(Token,[atom])]),
 	    _,
 	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
 	), !,
 	(   authenticate(Token)
-	->  addm(Policy,EltListAtom), !
+	->  addm(Policy,EltListAtom,Name), !
 	;   true
 	).
 paapi_addm(_) :- audit_gen(policy_admin, addm(failure)).
 
-addm(Policy,EltListAtom) :-
+addm(Policy,EltListAtom,_Name) :-
         ( ( read_term_from_atom(EltListAtom,EltList,[]), is_list(EltList),
 	      add_policy_elements(Policy,EltList) )
           ->  std_resp_MS(success,'elements added',EltList),
@@ -142,19 +150,23 @@ addm(Policy,EltListAtom) :-
 paapi_deletem(Request) :-
 	std_resp_prefix,
 	catch(
-	    http_parameters(Request,[policy(Policy,[atom]),
-				     policy_elements(EltListAtom,[atom]),
+	    (	http_parameters(Request,[policy(Policy,[atom]),
+				     policy_elements(EltListAtom,[atom,optional(true)]),
+				     name(Name,[atom,optional(true)]),
 				     token(Token,[atom])]),
+	        ( var(EltListAtom) ; var(Name) ) % one must be specified but not both
+	    ),
 	    _,
 	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
 	), !,
 	(   authenticate(Token)
-	->  deletem(Policy,EltListAtom), !
+	->  deletem(Policy,EltListAtom,Name), !
 	;   true
 	).
 paapi_deletem(_) :- audit_gen(policy_admin, deletem(failure)).
 
-deletem(Policy,EltListAtom) :-
+deletem(_Policy,EltListAtom,Name) :- ground(EltListAtom), ground(Name), !, fail.
+deletem(Policy,EltListAtom,_Name) :- ground(EltListAtom), !,
         ( ( read_term_from_atom(EltListAtom,EltList,[]), is_list(EltList),
 	      delete_policy_elements(Policy,EltList) )
           ->  std_resp_MS(success,'elements deleted',EltList),
@@ -162,6 +174,8 @@ deletem(Policy,EltListAtom) :-
 	  ;   std_resp_MS(failure,'error deleting elements',EltListAtom),
               audit_gen(policy_admin, deletem(Policy, 'error deleting elements'))
 	).
+deletem(_Policy,_EltListAtom,Name) :- ground(Name), !,
+	fail. % named set deletem not yet implemented
 
 % getpol
 paapi_getpol(Request) :- % set current policy
@@ -279,7 +293,8 @@ unloadpol(P) :-
 paapi_readpol(Request) :-
 	std_resp_prefix,
 	catch(
-	    http_parameters(Request,[policy(P,[atom,default(current_policy)]),token(Token,[atom])]),
+	    http_parameters(Request,[policy(P,[atom,default(current_policy)]),
+				     token(Token,[atom])]),
 	    _,
 	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
 	), !,
@@ -323,6 +338,130 @@ combinepol(P1,P2,Pc) :-
 	;   std_resp_MS(failure,'error combining policies',''),
 	    audit_gen(policy_admin, combinepol(P1,P2,Pc,failure))
 	).
+
+% loadcondi - load condition variables and predicates
+paapi_loadcondi(Request) :-
+	std_resp_prefix,
+	catch(
+	    http_parameters(Request,[cond_name(Cname,[atom,default(dynamic)]),
+				     cond_elements(EltListAtom,[atom]),
+				     token(Token,[atom])]),
+	    _,
+	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	(   authenticate(Token)
+	->  loadcondi(Cname,EltListAtom), !
+	;   true
+	).
+paapi_loadcondi(_) :- audit_gen(policy_admin, loadcondi(failure)).
+
+loadcondi(Cname,EltListAtom) :-
+        ( ( read_term_from_atom(EltListAtom,EltList,[]), is_list(EltList),
+	      dynamic_add_cond_elements(Cname,EltList) )
+          ->  std_resp_MS(success,'cond elements added',Cname),
+              audit_gen(policy_admin, loadcondi(Cname, 'cond elements added'))
+	  ;   std_resp_MS(failure,'error adding cond elements',EltListAtom),
+              audit_gen(policy_admin, loadcondi(Cname, 'error adding elements'))
+	).
+
+% unloadcondi
+paapi_unloadcondi(Request) :-
+	std_resp_prefix,
+	catch(
+	    (	http_parameters(Request,[cond_name(Cname,[atom,default(user_defined)]),
+				     cond_elements(EltListAtom,[atom,optional(true)]),
+				     token(Token,[atom])]),
+		( ground(Cname) ; ground(EltListAtom) ) % at least one must be specified
+	    ),
+	    _,
+	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	(   authenticate(Token)
+	->  unloadcondi(Cname,EltListAtom), !
+	;   true
+	).
+paapi_unloadcondi(_) :- audit_gen(policy_admin, unloadcondi(failure)).
+
+unloadcondi(_Cname,EltListAtom) :- var(EltListAtom), !, fail. % for now
+unloadcondi(Cname,EltListAtom) :- % Cname is either 'user_defined' or specified name
+        ( ( read_term_from_atom(EltListAtom,EltList,[]), is_list(EltList),
+	      dynamic_delete_cond_elements(Cname,EltList) )
+          ->  std_resp_MS(success,'cond elements deleted',EltList),
+              audit_gen(policy_admin, unloadcondi(Cname, 'cond elements unloaded'))
+	  ;   std_resp_MS(failure,'error unloading cond elements',EltListAtom),
+              audit_gen(policy_admin, unloadcondi(Cname, 'error unloading cond elements'))
+	).
+
+% readcond
+paapi_readcond(Request) :-
+	std_resp_prefix,
+	catch(
+	    http_parameters(Request,[cond_name(CN,[atom,default(dynamic)]),
+				     token(Token,[atom])]),
+	    _,
+	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	(   authenticate(Token)
+	->  readcond(CN), !
+	;   true
+	).
+paapi_readcond(_) :- audit_gen(policy_admin, readcond(failure)).
+
+readcond(CN) :-
+	(   dpl_conditions:is_cond_name(CN)
+	->
+	    with_output_to( atom(CAtom), pio:display_conditions(CN) ),
+	    std_resp_BS(success,'read conditions',CAtom)
+	;   std_resp_MS(failure,'unknown condition name',CN),
+	    audit_gen(policy_admin, readcond(CN,failure))
+	).
+
+% reset
+paapi_reset(Request) :-
+	std_resp_prefix,
+	catch(
+	    http_parameters(Request,[domain(Dom,[atom,default(conditions)]),
+				     name(Name,[atom,default(dynamic)]),
+				     token(Token,[atom])]),
+	    _,
+	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	(   authenticate(Token)
+	->  reset(Dom,Name), !
+	;   true
+	).
+paapi_reset(_) :- audit_gen(policy_admin, reset(failure)).
+
+reset(conditions,CN) :- !, % conditions domain
+	(   dpl_conditions:is_cond_name(CN)
+	->
+	    preset(conditions,CN),
+	    std_resp_BS(success,'reset conditions',CN)
+	;   std_resp_MS(failure,'unknown condition name',CN),
+	    audit_gen(policy_admin, reset(cond,CN,failure))
+	).
+reset(policies,_PN) :- !. % policies domain - noop for now
+reset(_,_). % ignore any other domain for now
+
+% resetcond - short-cut for conditions
+%
+% cond_name is the name of a condition set
+% if cond_name is not supplied it defaults to 'dynamic'
+% which will cause all dynamically loaded conditions to be unloaded
+%
+paapi_resetcond(Request) :-
+	std_resp_prefix,
+	catch(
+	    http_parameters(Request,[cond_name(CN,[atom,default(all)]),
+				     token(Token,[atom])]),
+	    _,
+	    (	std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	(   authenticate(Token)
+	->  reset(conditions,CN), !
+	;   true
+	).
+paapi_resetcond(_) :- audit_gen(policy_admin, resetcond(failure)).
 
 % initsession
 paapi_initsession(Request) :-
@@ -371,7 +510,6 @@ endsession(S) :-
 	;   std_resp_MS(failure,'session unknown',S),
 	    audit_gen(policy_admin, endsession(S,failure))
 	).
-
 
 %
 % GLOBAL POLICY ADMIN

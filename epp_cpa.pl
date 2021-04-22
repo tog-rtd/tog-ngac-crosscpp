@@ -229,8 +229,8 @@ sim_context_var(day_of_the_week, DayOfWeek) :- !,
     day_of_the_week(ShortDate,Day),
     nth1(Day,['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],DayOfWeek).
 %sim_context_var(adminLockdown,false) :- !.
-sim_context_var(weekday,true).
-sim_context_var(business,true).
+sim_context_var(weekday,true) :- !.
+sim_context_var(business,true) :- !.
 % ...
 sim_context_var(_,undefined).
 

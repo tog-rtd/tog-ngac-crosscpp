@@ -1,0 +1,25 @@
+pqapi/users tests
+set to Policy (a)
+Policy (a)
+success
+run users test cases for objects in Policy (a)
+expect o1=[(u1,[r,w]),(u2,[r])], o2=[(u1,[r]),(u2,[r,w])], o3=[(u2,[r,w])] o4=failure
+[(u1,[r,w]),(u2,[r])]
+success
+[(u1,[r]),(u2,[r,w])]
+success
+[(u2,[r,w])]
+success
+users
+failure
+run users test cases for objects in Policy (b)
+expect o1=[(u1,[r,w]),(u2,[r])] o2=[(u1,[r]),(u2,[r,w])] o3=[(u2,[r,w])] o4=failure
+[(u1,[r,w]),(u2,[r])]
+success
+[(u1,[r]),(u2,[r,w])]
+success
+[(u2,[r,w])]
+success
+users
+failure
+end of users tests

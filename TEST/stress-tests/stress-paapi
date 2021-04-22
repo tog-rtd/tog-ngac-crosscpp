@@ -1,0 +1,4 @@
+#!/bin/bash
+curl -s -G "http://127.0.0.1:8001/paapi/combinepol" --data-urlencode "policy1=Policy (a)" --data-urlencode "policy2=Policy (b)" --data-urlencode "combined=Policy (ab)" --data-urlencode "token=admin_token"
+
+curl -s -G "http://127.0.0.1:8001/paapi/setpol" --data-urlencode "policy=Policy (ab)" --data-urlencode "token=admin_token"

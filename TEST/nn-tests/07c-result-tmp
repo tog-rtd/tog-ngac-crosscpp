@@ -1,0 +1,52 @@
+Conditional Query Test
+load immediate cpolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"cpolicy"
+}
+set to cpolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"cpolicy"
+}
+run test cases for cpolicy without a condition, expect: deny deny deny
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+re-run test cases for cpolicy with condition using caccess call, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+re-run test cases for cpolicy with condition added to ordinary access call, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+------------------------------
+load immediate cpolicy2
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"cpolicy2"
+}
+set to cpolicy2
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"cpolicy2"
+}
+run test cases for cpolicy2 without a condition specified in the query
+if it is not a weekday expect: deny deny deny; if it is a weekday expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+re-run test cases for cpolicy with condition using caccess call, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+re-run test cases for cpolicy2 with condition added to ordinary access call, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+end of Conditional Query Test

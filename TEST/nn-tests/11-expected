@@ -1,0 +1,26 @@
+accessm tests
+set to Policy (a)
+Policy (a)
+success
+get the policy
+Policy (a)
+success
+run first four test cases for Policy (a), expect grant grant grant deny
+[grant,grant,grant,deny]
+success
+run first four test cases for Policy (a) with conditions, expect grant grant grant deny
+[grant,grant,grant,deny]
+success
+set to Policy (b)
+Policy (b)
+success
+get the policy
+Policy (b)
+success
+run first four test cases for Policy (b), expect deny deny grant grant
+[deny,deny,grant,grant]
+success
+run first four test cases for Policy (b) with conditions, expect deny deny grant grant
+[deny,deny,grant,grant]
+success
+end of accessm tests

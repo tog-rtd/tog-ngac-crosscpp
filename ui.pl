@@ -1,6 +1,8 @@
 % USER INTERFACE
 :- module(ui,[select_mult_list/3,select_one_list/3,
 	      display_list/1, display_listq/1, display_list/2, display_listq/2,
+	      timestamp2text/2, timestamp2text/3, text2timestamp/2,
+	      display_datetime/1, display_timestamp_datetime/1, display_timestamp_datetime/2,
 	      enter_a_number/2,
 	      gdisplay_term/1,
 	      notify/2]).
@@ -22,6 +24,7 @@
 %   select_one_list
 %   display_list
 %   enter_a_number
+%   display a date-time
 
 select_mult_list(List,Mark,Selection) :-
 	writeln('Select one or more from;'),
@@ -70,6 +73,37 @@ display_listq([Item|Items],Mark) :- atom(Mark), !,
 	format(' ~a ',Mark),
 	writeq(Item), nl,
 	display_listq(Items,Mark).
+
+% conversions to/from readable time, and display time
+
+timestamp2text(TS,Text) :-
+	stamp_date_time(TS,DateTime,local),
+	format_time(atom(Text),'%F %T%Z',DateTime).
+
+timestamp2text(TS,Text,rfc3339) :- !,
+	stamp_date_time(TS,DateTime,local),
+	format_time(atom(Text),'%FT%T%z',DateTime).
+
+timestamp2text(TS,Text,rfc3339z) :- !,
+	stamp_date_time(TS,DateTime,'UTC'),
+	format_time(atom(Text),'%FT%TZ',DateTime).
+
+text2timestamp(Text,TS) :- parse_time(Text,iso_8601,TS).
+
+display_datetime(DateTime) :-
+	writeq(DateTime), nl.
+
+display_timestamp_datetime(TS) :-
+	stamp_date_time(TS,DateTime,'UTC'),
+	format_time(atom(Text),'%F %T %Z',DateTime),
+	display_datetime(Text).
+
+display_timestamp_datetime(TS,rfc3339) :-
+	stamp_date_time(TS,DateTime,'UTC'),
+	format_time(atom(Text),'%FT%TZ',DateTime),
+	display_datetime(Text).
+
+% -------------------------------------------------
 
 portray(T) :- writeq(T).
 

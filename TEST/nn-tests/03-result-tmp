@@ -1,0 +1,51 @@
+load policy immediate
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"ipolicy"
+}
+set to ipolicy
+{
+  "respStatus":"success",
+  "respMessage":"policy set",
+  "respBody":"ipolicy"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"ipolicy"
+}
+read the policy (explicitly named as ipolicy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r,w],oa1)\n]).\n"
+}
+run test cases for ipolicy, expect: grant grant deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+load modified policy immediate
+{
+  "respStatus":"success",
+  "respMessage":"policy loaded immediate",
+  "respBody":"ipolicy"
+}
+get the policy
+{
+  "respStatus":"success",
+  "respMessage":"current policy",
+  "respBody":"ipolicy"
+}
+read the modified policy (as the current policy)
+{
+  "respStatus":"success",
+  "respMessage":"read policy",
+  "respBody":"policy(ipolicy, access, [\n  user(u1),\n  user_attribute(ua1),\n  object(o1),\n  object_attribute(oa1),\n  policy_class(access),\n  connector('PM'),\n  assign(u1,ua1),\n  assign(o1,oa1),\n  assign(ua1,access),\n  assign(oa1,access),\n  assign(access,'PM'),\n  associate(ua1,[r],oa1)\n]).\n"
+}
+run test cases for modified ipolicy, expect: grant deny deny
+{"respStatus":"success", "respMessage":"grant", "respBody":"u1,r,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u1,w,o1"}
+{"respStatus":"success", "respMessage":"deny", "respBody":"u2,r,o1"}
+end of load immediate tests

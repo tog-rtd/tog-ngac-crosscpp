@@ -1,4 +1,12 @@
-Tests numbered with nn-... are the standard tests for ngac/ngac-server/epp
+Tests in the directory nn-tests are named nn-<something>.sh are the
+standard tests for ngac/ngac-server/epp nn-expected and nn-expected-json
+are the expected results for the server running in legacy and json mode.
+
+nn-result-tmp is the file used by the run-nn-tests.sh script to
+temporarily hold the result of the current run on the nn-<something>.sh
+file.
 
 The test cme-test.sh takes one parameter, a port number on which to contact the cme simulator,
 and sends it a context change notification registration.
+
+Tests in the directory stress-tests ...

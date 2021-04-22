@@ -17,11 +17,15 @@
 % Added value 'developer' for commands such as inspect,regtest,reinit
 %
 syntax(access(policy,(user,mode,object)),           admin).
+syntax(access(policy,(user,mode,object),condition), admin).
 syntax(activate_erp(erp_name),			    admin).
 syntax(admin,                                       admin).
 syntax(advanced,                                    admin).
 syntax(aoa(user),				    admin).
+syntax(aua(object),				    admin).
 syntax(combine(p1,p2,p3),			    admin).
+syntax(conditions,			            admin).
+syntax(conditions(name),		            admin).
 syntax(current_erp,				    admin).
 syntax(deactivate_erp(erp_name),		    admin).
 syntax(decl2imp(decl_file,imp_file),		                                  obsolete).
@@ -32,6 +36,8 @@ syntax(epp(port),				    admin).
 syntax(epp(port,token),			            admin).
 syntax(export_commands(imp_file),                                                 obsolete).
 syntax(getpol,				            admin).
+syntax(guitracer,			            admin).
+syntax(guiserver,			            admin).
 syntax(halt,                                        admin).
 syntax(help,                                        admin).
 syntax(help(command),				    admin).
@@ -40,10 +46,13 @@ syntax(import_policy(policy_file),	                      advanced).
 syntax(inspect,                                                         developer).
 syntax(inspect(item),                                                   developer).
 syntax(load_erf(erp_file),			              advanced).
+syntax(load_cond(cond_file),			              advanced).
+syntax(load_cond(cond_name,cond_file),			      advanced).
 syntax(los(policy),                                                               obsolete).
 syntax(make,                                                            developer).
 syntax(minaoa(user),				                                  obsolete).
 syntax(newpol(policyid),                            admin).
+syntax(noop,					    admin).
 syntax(nl,                                          admin).
 syntax(pmcmd,                                                                     obsolete).
 syntax(policy_graph,				    admin).
@@ -57,6 +66,8 @@ syntax(proc(proc_id),                               admin).
 syntax(proc(proc_id,step_or_verbose),		    admin).
 syntax(quit,                                        admin).
 syntax(regtest,								developer).
+syntax(reset,					    admin).
+syntax(reset(domain,name),                          admin).
 syntax(reinit,                                                          developer).
 syntax(script(file),                                admin).
 syntax(script(file,step_or_verbose),		    admin).
@@ -80,6 +91,9 @@ syntax(traceon,					                        developer).
 syntax(traceone,					                developer).
 syntax(unload_erp(erp_name),			              advanced).
 syntax(userlos(policy,user),                        admin).
+syntax(users(object),                               admin).
+syntax(users(object,mode),                          admin).
+syntax(users(object,mode,condition),                admin).
 syntax(version,				            admin).
 syntax(versions,				    admin).
 
@@ -89,9 +103,13 @@ syntax(versions,				    admin).
 % optional static semantics entry, e.g., used to check command arguments
 % distinct from syntax so syntax can be called separately
 semantics(access(P,(U,M,O))) :- !, ground(P), ground(U), ground(M), ground(O).
+semantics(access(P,(U,M,O),C)) :- !, ground(P), ground(U), ground(M), ground(O),
+	(   C==true ; compound(C) ; is_list(C) ), !.
 semantics(activate_erp(Erp_name)) :- !, atom(Erp_name).
 semantics(aoa(U)) :- !, ground(U).
+semantics(aua(O)) :- !, ground(O).
 semantics(combine(P1,P2,P3)) :- !, atom(P1), atom(P2), atom(P3).
+semantics(conditions(N)) :- !, atom(N).
 semantics(deactivate_erp(Erp_name)) :- !, atom(Erp_name).
 semantics(decl2imp(Dfile,Ifile)) :- !, atom(Dfile), atom(Ifile).
 semantics(demo(C)) :- !, ground(C).
@@ -108,6 +126,8 @@ semantics(import_pm(PM)) :- atom(PM).
 semantics(import_policy(P)) :- atom(P).
 semantics(inspect(I)) :- nonvar(I).
 semantics(load_erf(ERF)) :- atom(ERF).
+semantics(load_cond(CondF)) :- atom(CondF).
+semantics(load_cond(CondN,CondF)) :- atom(CondN), atom(CondF).
 semantics(los(P)) :- !, ground(P).
 semantics(minaoa(U)) :- !, ground(U).
 semantics(newpol(ID)) :- !, ground(ID).
@@ -119,6 +139,7 @@ semantics(policy_spec(P,F)) :- !, atom(P), atom(F).
 semantics(policy_spec(P,F,S)) :- !, atom(P), atom(F), S == silent.
 semantics(proc(P)) :- !, atom(P).
 semantics(proc(P,Opt)) :- !, atom(P), (Opt==step;Opt==s;Opt==verbose;Opt==v). % other opts can be added
+semantics(reset(Dom,Name)) :- !, atom(Dom), atom(Name).
 semantics(script(F)) :- !, atom(F).
 semantics(script(F,Opt)) :- !, atom(F), (Opt==step;Opt==s;Opt==verbose;Opt==v). % other opts can be added
 semantics(server(Port)) :- !, integer(Port).
@@ -133,6 +154,9 @@ semantics(time(C)) :- !, ground(C).
 semantics(time(C,N)) :- !, ground(C), integer(N).
 semantics(unload_erp(ERP)) :- atom(ERP).
 semantics(userlos(P,U)) :- !, ground(P), ground(U).
+semantics(users(O)) :- !, atom(O).
+semantics(users(O,M)) :- !, atom(O), atom(M).
+semantics(users(O,M,C)) :- !, atom(O), atom(M),(atom(C);compound(C);is_list(C)),!.
 semantics(_). % succeed for all other commands
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -144,6 +168,7 @@ semantics(_). % succeed for all other commands
 help(access,    'Under policy, user can access in mode the object.').
 help(access,	'Arg1 is a policy name.').
 help(access,    'Arg2 is and access triple, "(User, Mode, Object)".').
+help(access,    'Arg3 (opt) a condition predicate for conditional rules.').
 
 help(activate_erp, 'Activate an event-response package alreadly loaded.').
 help(activate_erp, 'Arg is the name of a loaded ER package.').
@@ -154,8 +179,14 @@ help(advanced,  'Switch to advanced user mode, enabling all commands.').
 help(aoa,	'all object attributes for user in current policy and policy class').
 help(aoa,       'Arg is user identifier.').
 
+help(aua,	'all user attributes for object in current policy and policy class').
+help(aua,       'Arg is object identifier.').
+
 help(combine,	'Arg1 and Arg2 are the names of currently loaded declarative policy specs.').
 help(combine,	'Arg3 is name of a new policy spec that is the combination of the first two.').
+
+help(conditions,'Display current condition variable and condition predicate declarations.').
+help(conditions,'Arg1 (optional) the name of the conditions to display (predefined/static/dynamic/...).').
 
 help(current_erp, 'Display the name of the current active ER package.').
 
@@ -167,15 +198,6 @@ help(decl2imp,	'Arg2 is name of output file to contain imperative policy spec.')
 
 help(demo,	'Run canned demos.'). % command for running canned demos of different features
 help(demo,      'Arg is demo identifier.').
-
-help(policy_graph, 'Display graph of the current or named policy,').
-help(policy_graph, 'Arg1 (opt) names a currently loaded policy (or "current_policy") to graph,').
-help(policy_graph, 'Arg2 (opt) file name root for dot and png files.').
-
-help(policy_spec, 'Display the current or named policy,').
-help(policy_spec, 'Arg1 (opt) names a currently loaded policy (or "current_policy") to display,').
-help(policy_spec, 'Arg2 (opt) file name root to save policy file,').
-help(policy_spec, 'Arg3 (opt) if present, must be "silent" to create file without console display.').
 
 help(dps,       'Show derived privileges of the specified policy').
 help(dps,	'Arg is a policy name').
@@ -209,6 +231,10 @@ help(inspect,	'arg: target(<target>,<element>) will show intermediate facts.').
 
 help(load_erf, '"load" an event-response package from a file').
 
+help(load_cond, '"load" condition declarations and definitions from a file').
+help(load_cond, 'Arg1 is the conditions file to be loaded.').
+help(load_cond, 'Arg2 (opt) is the name to be associated with conditions (default "dynamic").').
+
 help(los,       'Show logical object system of the specified policy').
 help(los,	'Arg is a policy name').
 
@@ -223,6 +249,15 @@ help(nl,        'Write a newline to the console.').
 
 help(pmcmd,	'Enter PM server command mode.').
 
+help(policy_graph, 'Display graph of the current or named policy,').
+help(policy_graph, 'Arg1 (opt) names a currently loaded policy (or "current_policy") to graph,').
+help(policy_graph, 'Arg2 (opt) file name root for dot and png files.').
+
+help(policy_spec, 'Display the current or named policy,').
+help(policy_spec, 'Arg1 (opt) names a currently loaded policy (or "current_policy") to display,').
+help(policy_spec, 'Arg2 (opt) file name root to save policy file,').
+help(policy_spec, 'Arg3 (opt) if present, must be "silent" to create file without console display.').
+
 help(proc,	'Run a stored NGAC command procedure.').
 help(proc,	'Arg 1 is a procedure identifier.').
 help(proc,      'Arg 2 (optional) is "step" or "verbose".').
@@ -233,6 +268,9 @@ help(regtest,   'Run regression tests.').
 
 help(reinit,	'Re-initialize.').
 
+help(reset,     'Reset policy or condition databases.').
+help(reset,	'Arg 1 is the domain (conditions or policy) to be reset.').
+help(reset,     'Arg 2 is the name of the group to be reset.').
 
 help(script,	'Run a NGAC command script from a file.').
 help(script,	'Arg 1 is the file name.').
@@ -272,6 +310,11 @@ help(userlos,   'Show the logical object system under policy for user.').
 help(userlos,	'Arg 1 is policy name.').
 help(userlos,   'Arg 2 is user name.').
 
+help(users,     'List users with access to object.').
+help(users,     'Arg1 is an object.').
+help(users,     'Arg2 (optional) is an access mode to the object.').
+help(users,     'Arg3 (optional after Arg2) is a condition predicate.').
+
 help(version,	'Show current version number.').
 help(versions,	'Show past versions with descriptions and current version.').
 
@@ -291,14 +334,23 @@ do(access(P,(U,M,O))) :- !,
 	->  writeln(grant)
 	;   writeln(deny)
 	).
+do(access(P,(U,M,O),C)) :- !,
+	(   pdp:access_check(P,(U,M,O),C)
+	->  writeln(grant)
+	;   writeln(deny)
+	).
 do(activate_erp(ERPname)) :- !, epp_era:activate_loaded_erp(ERPname).
 do(admin) :- !, retractall(user_mode(_)), assert(user_mode(admin)).
 do(advanced) :- !, retractall(user_mode(_)), assert(user_mode(advanced)).
 do(aoa(U)) :- !, param:current_policy(P), dpl:policy(P,PC),
 	pdp:aoa(P,U,PC,AOA), ui:display_list(AOA).
+do(aua(O)) :- !, param:current_policy(P), dpl:policy(P,PC),
+	pdp:aua(P,O,PC,AUA), ui:display_list(AUA).
 do(combine(P1,P2,Presult)) :- !,
 	pap:compose_policies(P1,P2,Presult),
 	true.
+do(conditions) :- !, pio:display_conditions.
+do(conditions(N)) :- !, pio:display_conditions(N).
 do(current_erp) :- !, param:current_erp(Erp), writeln(Erp).
 do(decl2imp(D,I)) :- !,
 	 % same as import_policy+export_commands w/o making current policy
@@ -320,6 +372,25 @@ do(export_commands(PolicyName,CmdFile)) :-
 	dpl:save_as_cmds(PolicyName,CmdFile).
 
 do(getpol) :- !, param:current_policy(P), writeq(P), nl.
+
+do(guitracer) :- !,
+	(   param:guitracer(off)
+	->  setparam(guitracer,on),
+	    guitracer
+	;   true).
+
+do(guiserver) :- !,
+	(   param:guiserver(off)
+	->  do(set(guiserver,on)),
+	    do(guitracer),
+	    do(set(jsonresp_server,on)), % turns on JSON responses for policy server
+	    do(set(jsonresp,on)),
+	    do(set(no_sleep,on)),
+	    % do(traceone),
+	    do(server(8001)),
+	    do(echo(ready))
+	;   do(echo('already on'))
+	).
 
 do(help) :- help.
 do(help) :- !.
@@ -347,11 +418,22 @@ do(load_erf(ERLfile)) :- % load an event-response package from file
 	epp:load_erp(ERLfile,ERPname),
 	ui:notify('Event-Response Package loaded',ERPname).
 
+do(load_cond(CondFile)) :- !, % load conditions from file
+	do( load_cond(CondFile,dynamic) ).
+
+do(load_cond(CondFile,CondName)) :- !, % load conditions from file
+	exists_file(CondFile), read_file_to_terms(CondFile,CondTerms,[]),
+	format('CondTerms read:~q~n',[CondTerms]),
+	pap:dynamic_add_cond_elements(CondName,CondTerms),
+	format(atom(M),'Conditions file ~q loaded',[CondFile]),
+	ui:notify(CondName,M).
+
 do(los(P)) :- !, pdp:los(P,LOS), ui:display_list(LOS).
 do(make) :- !, make.
 do(minaoa(U)) :- !, param:current_policy(P), dpl:policy(P,PC),
 	pdp:min_aoa(P,U,PC,MAOA), ui:display_list(MAOA).
 do(newpol(P)) :- !, do(setpol(P)).
+do(noop) :- !.
 do(nl) :- nl.
 do(pmcmd) :- !, (interactive(true) -> tl(pmcmd) ; true).
 
@@ -415,6 +497,8 @@ do(quit) :- !.
 do(halt) :- !, halt.
 do(regtest) :- !, ngac:regression_test_all.
 do(reinit) :- !, dpl:re_init.
+do(reset) :- !, pap:preset(conditions,all).
+do(reset(D,N)) :- !, pap:preset(D,N).
 do(script(F)) :- !, param:prompt_string(P), run_command_script(P,F,none).
 do(script(F,Opt)) :- !, param:prompt_string(P), run_command_script(P,F,Opt).
 do(selftest) :- !, ngac:self_test_all, /* others ... */ true.
@@ -438,7 +522,7 @@ do(set(regression_test,V)) :- (V == on ; V == off), !, param:setparam(regression
 do(set(verbose,V)) :- (V == on ; V == off), !, param:setparam(verbose,V).
 do(set(policy,P)) :- !, do(newpol(P)).
 % add cases for other parameter settings here
-do(set(P,V)) :- atom(P), ground(V), param:setparam(P,V).
+do(set(P,V)) :- atom(P), ground(V), param:setparam(P,V), !.
 do(set(_,_)) :- !,
 	writeln('Unknown parameter name or illegal parameter value').
 do(status) :- param:ngac_name(N,_), write(N),
@@ -457,6 +541,18 @@ do(unload_erp(ERPname)) :- % load an event-response package from file
 
 do(userlos(P,U)) :- pdp:user_los(P,U,V,E),
 	write('V='), ui:display_list(V,''), write('E='), ui:display_list(E,'').
+do(users(O)) :-  !,
+	param:current_policy(P), pdp:aua_users(P,O,_PC,Users), writeln(Users). %ui:display_list(Users).
+do(users(O,M)) :- !,
+	param:current_policy(P), pdp:aua_users(P,(M,O),Users), writeln(Users). %ui:display_list(Users).
+do(users(O,M,true)) :-  do(users(O,M)).
+do(users(O,M,C)) :- is_list(C), !, dpl_conditions:is_cond_var_def_list(C),
+	param:current_policy(P),
+	pdp:aua_users(P,O,_,M,C,Users), writeln(Users). %ui:display_list(Users).
+do(users(O,M,C)) :- dpl_conditions:validate_condition_predicate(C,_), !,
+	param:current_policy(P),
+	writeln('condition predicate ignored'), % HERE more to do
+	pdp:aua_users(P,(M,O),Users), writeln(Users). %ui:display_list(Users).
 do(version) :- !,
 	param:ngac_version(Cur), param:ngac_current_version_description(Desc),
 	format('Current version: ~a: ~a~n',[Cur,Desc]).

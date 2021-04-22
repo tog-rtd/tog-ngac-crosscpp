@@ -65,8 +65,12 @@ server :-
 	server(Port).
 
 server(Port) :-
-	format('ngac-server starting~n'),
+	param:ngac_version(Vnum), format('ngac-server version ~a starting~n',Vnum),
 	create_server_audit_log,
+	(   param:guiserver(on)
+	->  trace
+	;   true
+	),
 	http_server(http_dispatch, [port(Port)]),
 	format('ngac-server listening on port ~d~n',[Port]),
 	audit_gen(ngac_start, success),
@@ -159,7 +163,7 @@ server_with_opts(Opts) :-
 	;   true
 	),
 
-	format('ngac-server starting~n'),
+	param:ngac_version(Vnum), format('ngac-server version ~a starting~n',Vnum),
 	create_server_audit_log,
 	http_server(http_dispatch, [port(QPort)]),
 	format('ngac-server listening on port ~d~n',[QPort]),

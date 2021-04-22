@@ -1,0 +1,30 @@
+#!/bin/bash
+count=$1
+if [ $1x = x ] ; then
+count=1
+fi
+i=1
+cd ../nn-tests
+while [ $i -le $count ]
+do
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=r&object=o1' | grep grant`"x = x ] ; then echo "ERROR tc50" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=w&object=o1' | grep grant`"x = x ] ; then echo "ERROR tc51" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=r&object=o2' | grep grant`"x = x ] ; then echo "ERROR tc52" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=r&object=o1' | grep grant`"x = x ] ; then echo "ERROR tc53" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=r&object=o2' | grep grant`"x = x ] ; then echo "ERROR tc54" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=w&object=o2' | grep grant`"x = x ] ; then echo "ERROR tc55" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=r&object=o3' | grep grant`"x = x ] ; then echo "ERROR tc56" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=w&object=o3' | grep grant`"x = x ] ; then echo "ERROR tc57" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=r&object=o4' | grep grant`"x = x ] ; then echo "ERROR tc58" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=w&object=o4' | grep grant`"x = x ] ; then echo "ERROR tc59" ; fi
+
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=w&object=o2' | grep deny`"x = x ] ; then echo "ERROR tc60" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=r&object=o3' | grep deny`"x = x ] ; then echo "ERROR tc61" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=w&object=o3' | grep deny`"x = x ] ; then echo "ERROR tc62" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=r&object=o4' | grep deny`"x = x ] ; then echo "ERROR tc63" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u1&ar=w&object=o4' | grep deny`"x = x ] ; then echo "ERROR tc64" ; fi
+	if [ "`curl -s 'http://127.0.0.1:8001/pqapi/access?user=u2&ar=w&object=o1' | grep deny`"x = x ] ; then echo "ERROR tc65" ; fi
+
+	i=$(( $i + 1 ))
+done
+if [ $2x != x ] ; then echo end of stress-pqapi $2 ; fi

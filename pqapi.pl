@@ -21,10 +21,12 @@
 :- http_handler(root('pqapi/'), api_unimpl, [prefix]).
 :- http_handler(root(pqapi/access), pqapi_access, [prefix]).
 :- http_handler(root(pqapi/accessm), pqapi_accessm, [prefix]).
+:- http_handler(root(pqapi/caccess), pqapi_caccess, [prefix]).
+:- http_handler(root(pqapi/users), pqapi_users, [prefix]).
 :- http_handler(root(pqapi/getobjinfo), pqapi_getobjinfo, [prefix]).
 :- http_handler(root(pqapi/paramecho), pqapi_paramecho, [prefix]).
 
-pqapi([access,accessm,getobjectinfo]). % POLICY QUERY API
+pqapi([access,accessm,caccess,users,getobjectinfo]). % POLICY QUERY API
 
 % Global Policy Query API
 %:- http_handler(root(.), use_valid_api, []).
@@ -52,19 +54,36 @@ gpqapi([gaccess,ggetinfo]). % GLOBAL POLICY QUERY API
 % assignments to the JSON response structure for each API are given in
 % the documentation
 
-% access
+% access/3
 pqapi_access(Request) :-
 	std_resp_prefix,
 	catch(
 	     http_parameters(Request,[user(User,[atom]),
 				 ar(AR,[atom]),
-				 object(Object,[atom])
+				 object(Object,[atom]),
+				 cond(Cond,[atom,optional(true)])
 				]),
 	    _, ( std_resp_MS(failure,'missing parameter',''), !, fail )
 	), !,
-	access_response(User,AR,Object), !.
+	access_response(User,AR,Object,Cond),
+	!.
 pqapi_access(_) :- audit_gen(policy_query, access(failure)).
 
+% access/4 - access with a condition and its actual parameters
+pqapi_caccess(Request) :- % added optional cond to access obsoleting this
+	std_resp_prefix,
+	catch(
+	     http_parameters(Request,[user(User,[atom]),
+				 ar(AR,[atom]),
+				 object(Object,[atom]),
+				 cond(ArgListAtom,[atom])
+				]),
+	    _, ( std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	access_response(User,AR,Object,ArgListAtom), !.
+pqapi_caccess(_) :- audit_gen(policy_query, caccess(failure)).
+
+% access_response/3
 access_response(User,AR,Object) :- param:current_policy(deny), !,
 	access_deny(deny,User,AR,Object).
 
@@ -76,6 +95,26 @@ access_response(User,AR,Object) :-
 	(   Policy == none
 	->  std_resp_MS(failure,'no current policy','')
 	;   (   access_check(Policy,(User,AR,Object))
+	    ->  access_grant(Policy,User,AR,Object)
+	    ;   access_deny(Policy,User,AR,Object)
+	    )
+	).
+
+% access_response/4
+access_response(User,AR,Object,A) :- var(A), !, access_response(User,AR,Object).
+access_response(User,AR,Object,_CondArgAtom) :- param:current_policy(deny), !,
+	access_deny(deny,User,AR,Object).
+
+access_response(User,AR,Object,_CondArgAtom) :- param:current_policy(grant), !,
+	access_grant(grant,User,AR,Object).
+
+access_response(User,AR,Object,CondArgAtom) :-
+        read_term_from_atom(CondArgAtom,CondArg,[]),
+	(   compound(CondArg) ; atom(CondArg) ; is_list(CondArg) ), !,
+	param:current_policy(Policy),
+	(   Policy == none
+	->  std_resp_MS(failure,'no current policy','')
+	;   (   access_check(Policy,(User,AR,Object),CondArg)
 	    ->  access_grant(Policy,User,AR,Object)
 	    ;   access_deny(Policy,User,AR,Object)
 	    )
@@ -134,12 +173,107 @@ accessm_results(Policy,[Query|Queries],[Result|Results]) :-
 	accessm_result(Policy,Query,Result),
 	accessm_results(Policy,Queries,Results).
 
-accessm_result(P,(U,R,O),Result) :- var(Result), % nonvar is reported as malformed query
+%accessm_result(P,(U,R,O),Result) :- var(Result), % nonvar is reported as malformed query
+%	(   access_check(P,(U,R,O))
+%	->  param:grant_resp(Result)
+%	;   param:deny_resp(Result)
+%	), !.
+%accessm_result(P,(U,R,O,C),Result) :- var(Result),
+%	(	caccess_check(P,(U,R,O),C)
+%	->	param:grant_resp(Result)
+%	;	param:deny_resp(Result)
+%	), !.
+% accessm_result(P,Q,Result) :- var(Result), % nonvar is reported as malformed query
+%	check_mquery(Q,U,R,O,C),
+%	(   caccess_check(P,(U,R,O),C)
+%	->  param:grant_resp(Result)
+%	;   param:deny_resp(Result)
+%	), !.
+accessm_result(P,Q,Result) :- var(Result), % nonvar is reported as malformed query
+	Q = (U,R,O), \+compound(O), !,
 	(   access_check(P,(U,R,O))
 	->  param:grant_resp(Result)
 	;   param:deny_resp(Result)
-	), !.
+	).
+accessm_result(P,Q,Result) :- var(Result), % nonvar is reported as malformed query
+	Q = (U,R,O,C), ( compound(C) ; C==true ), !,
+	(   access_check(P,(U,R,O),C)
+	->  param:grant_resp(Result)
+	;   param:deny_resp(Result)
+	).
 accessm_result(_,_,'malformed query').
+
+pqapi_users(Request) :-
+	std_resp_prefix,
+	catch(
+	    http_parameters(Request,[object(O,[atom]),
+				     %mode(M,[atom,optional(true)]),
+				     ar(AR,[atom,optional(true)]),
+				     cond(CondAtom,[atom,optional(true)])
+				    ]),
+	    _, ( std_resp_MS(failure,'missing parameter',''), !, fail )
+	), !,
+	AR = M,
+	users(O,M,CondAtom).
+pqapi_users(_) :- audit_gen(policy_query, users(failure)).
+
+users(O,M,C) :- var(C), !, users(O,M). % no condition supplied
+users(O,M,C) :- C==true, !, users(O,M). % the condition is 'true'
+users(O,M,C) :- string(C), !, atom_string(Catom,C), users(O,M,Catom).
+%users(O,M,C) :- string(C), !,
+%	read_term_from_chars(C,Cond,[]),
+%	param:current_policy(P),
+%	(   pdp:aua_users(P,O,_PC,M,Cond,Users)
+%	->  std_resp_BS(success, users(O), Users)
+%	;   std_resp_MS(failure, users, O)
+%	).
+users(O,M,Catom) :- atom(Catom),
+	read_term_from_atom(Catom,Cond,[]),
+	param:current_policy(P),
+	(   pdp:aua_users(P,O,_PC,M,Cond,Users)
+	->  std_resp_BS(success, users(O), Users)
+	;   std_resp_MS(failure, users(O), '')
+	).
+/*
+users2(O,M,C) :- is_list(C), !, % condition var defs list?
+	is_cond_var_list(C),
+	param:current_policy(P),
+	(   pdp:aua_users(P,O,_PC,M,C,Users)
+	->  std_resp_BS(success, users, Users)
+	;   std_resp_MS(failure, users, O)
+	).
+users2(O,M,C) :- (atom(C) ; compound(C)), !, % a condition predicate?
+	is_cond_pred(C),
+	param:current_policy(P),
+	true.
+*/
+
+% users/2 there is no condition supplied
+users(O,M) :- var(M), !, % no AR is specified
+	param:current_policy(P),
+	(   pdp:aua_users(P,O,_PC,Users)
+	->  std_resp_BS(success, users, Users)
+	;   std_resp_MS(failure, users, O)
+	).
+
+users(O,M) :- % an AR is specified
+	param:current_policy(P),
+	(   pdp:aua_users(P, (M,O), Users)
+	->  std_resp_BS(success ,users, Users)
+	;   std_resp_MS(failure, users, (O,M))
+	).
+
+is_cond_pred(CP) :- % CP =.. [_C|_Cargs],
+	dpl_conditions:validate_condition_predicate(CP,_). % HERE more to do
+
+is_cond_var_list(C) :- dpl_conditions:is_cond_var_def_list(C).
+% is_cond_var_list([]).
+% is_cond_var_list([C|Cs]) :- cond_var_list_item(C),
+% is_cond_var_list(Cs).
+% cond_var_list_item(CVar=Val) :- atom(CVar), atom(Val). % HERE more to do
+
+check_mquery(Q,U,R,O,true) :- Q = (U,R,O), \+compound(O), !.
+check_mquery(Q,U,R,O,C) :- Q = (U,R,O,C), (compound(C);C==true), !.
 
 % getobjinfo
 pqapi_getobjinfo(Request) :-

@@ -1,0 +1,14 @@
+#!/bin/bash
+count=$1
+if [ $1x = x ] ; then
+count=1
+fi
+stress-paapi
+stress-pqapi $count 1 &
+stress-pqapi $count 2 &
+stress-pqapi $count 3 &
+stress-pqapi $count 4 &
+stress-pqapi $count 5 &
+
+wait
+echo end of stress-top

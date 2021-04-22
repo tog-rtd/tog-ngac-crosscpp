@@ -302,6 +302,62 @@ policy('CondPolicy1','Conditional Access', [
         associate('Division',[r],'Projects')
         ]).
 
+policy(cpolicy,access,[
+	user(u1),
+	user_attribute(ua1),
+	object(o1),
+	object_attribute(oa1),
+	policy_class(access),
+	connector('PM'),
+	assign(u1,ua1),
+	assign(o1,oa1),
+	assign(ua1,access),
+	assign(oa1,access),
+	assign(access,'PM'),
+	cond( is_True(_), associate(ua1,[r,w],oa1) )
+        ]).
+
+policy(cpolicy2,access,[
+	user(u1),
+	user_attribute(ua1),
+	object(o1),
+	object_attribute(oa1),
+	policy_class(access),
+	connector('PM'),
+	assign(u1,ua1),
+	assign(o1,oa1),
+	assign(ua1,access),
+	assign(oa1,access),
+	assign(access,'PM'),
+	cond( is_True(weekday), associate(ua1,[r,w],oa1) )
+        ]).
+
+policy(mpolicy1,market_policy,[
+	connector('PM'),
+	policy_class(market_policy),
+	assign(market_policy,'PM'),
+
+	user_attribute(sp_5f1aa9f638189e22005d0f39),
+	assign(sp_5f1aa9f638189e22005d0f39, market_policy),
+	object_attribute(owner_1),
+	assign(owner_1, market_policy),
+	object('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4'),
+	assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4', owner_1),
+    % aeon channel for offer
+	user(achnl_5f5a39f20463e50012bca2c3),
+	assign(achnl_5f5a39f20463e50012bca2c3, sp_5f1aa9f638189e22005d0f39),
+    % a contract based on the offer
+	user_attribute(ua_cntr_5f3fa521b1782447069c2649),
+	object_attribute(oa_cntr_5f3fa521b1782447069c2649),
+	assign(achnl_5f5a39f20463e50012bca2c3, ua_cntr_5f3fa521b1782447069c2649),
+	assign(ua_cntr_5f3fa521b1782447069c2649, sp_5f1aa9f638189e22005d0f39),
+	assign('device_95b40cf9-a9fc-4bd8-b695-99773b6f25e4', oa_cntr_5f3fa521b1782447069c2649),
+	assign(oa_cntr_5f3fa521b1782447069c2649, owner_1),
+	cond(dr_offer_5f5a39f2b559dcf200f424d0(devid,mchan,tstart,tstop,tsubmit,loMin,loMax,laMin,laMax),
+		associate(ua_cntr_5f3fa521b1782447069c2649, [r], oa_cntr_5f3fa521b1782447069c2649) )
+
+                ]).
+
 % Cloud of Clouds example
 
 policy(lc1,'Local Cloud 1',[

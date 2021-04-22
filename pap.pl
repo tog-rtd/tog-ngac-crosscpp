@@ -5,14 +5,17 @@
 		delete_policy_element/2, delete_policy_element/3,
 		add_policy_elements/2, add_policy_elements/3,
 		delete_policy_elements/2, delete_policy_elements/3,
-	        compose_policies/3,
-	        get_current_policy/1, set_current_policy/1,
-	        get_current_gpolicy/1, set_current_gpolicy/1,
-	        load_policy/2, load_policy_immediate/2, unload_policy/1]
+		compose_policies/3,
+		get_current_policy/1, set_current_policy/1,
+		get_current_gpolicy/1, set_current_gpolicy/1,
+		load_policy/2, load_policy_immediate/2, unload_policy/1,
+	        dynamic_add_cond_elements/2, dynamic_delete_cond_elements/2,
+		preset/2]
 	 ).
 
 :- use_module(param).
 :- use_module(dpl).
+:- use_module(dpl_conditions).
 :- use_module(sessions).
 :- use_module(audit,[audit_gen/2]). % currently not used in this module
 
@@ -20,7 +23,7 @@ permitted_add_delete_policy_elements([user,object,assign,associate]).
 
 %
 % Policy Administration Point commands
-% called externally through paapi
+% called externally from paapi
 % or internally through the pap exported predicates
 %
 % IN THE FOLLOWING NEED TO CHECK FOR EFFECTS OF CONDITIONAL RULES
@@ -28,6 +31,22 @@ permitted_add_delete_policy_elements([user,object,assign,associate]).
 % add_policy_element/2
 add_policy_element(P:PC,Element) :- !, atom(P), atom(PC), add_policy_element(P,PC,Element).
 add_policy_element(P,Element) :- atom(P), policy(P,PC), add_policy_element(P,PC,Element).
+
+% From dpl.pl for reference:
+%
+% policy_elements([user,user_attribute,object,object_attribute,policy_class,
+%		 operation,opset,composed_policy,assign,associate,connector,
+%		 cond,conditions,external_attribute]).
+%
+% policy_elements_args([user(_),user_attribute(_),
+%		      object(_),object(_,_,_,_,_,_,_),
+%		      object_attribute(_),policy_class(_),operation(_),operation(_,_),
+%		      opset(_,_),composed_policy(_,_,_),assign(_,_),associate(_,_,_),
+%		      connector(_),cond(_,_),conditions(_),external_attribute(_)]).
+%
+% conditional_policy_elements_args([assign(_,_),associate(_,_,_)]).
+
+
 
 % add_policy_element/3
 add_policy_element(P,PC,user(U)) :- \+element(P:PC,user(U)),	!, passert( element(P:PC,user(U)) ).
@@ -49,13 +68,30 @@ add_policy_element(P,PC,associate(A,R,B)) :- atom(A), atom(B), ground(R), is_lis
 % (see add_policy_elements)
 
 
-add_policy_elements(P:PC,Elements) :- !, atom(P), atom(PC), add_policy_elements(P,PC,Elements).
-add_policy_elements(P,Elements) :- atom(P), policy(P,PC), add_policy_elements(P,PC,Elements).
 
+% add_policy_elements/2
+% this is the entry point from paapi for addm
+%
+% wanting addm to do more element kinds without further developing this,
+% instead of calling add_policy_elements/3 lets just call
+% unpack_policy_elements/2 from dpl
+%
+% we can distinguish "safe" add from "unsafe" add later
+% So, it was:
+% ----------
+% add_policy_elements(P:PC,Elements) :- !, atom(P), atom(PC), add_policy_elements(P,PC,Elements).
+% add_policy_elements(P,Elements) :- atom(P), policy(P,PC), add_policy_elements(P,PC,Elements).
+% ----------
+% but now we have:
+add_policy_elements(P:PC,Elements) :- !, atom(P), atom(PC), dpl:unpack_policy_elements(P:PC,Elements).
+add_policy_elements(P,Elements) :- atom(P), policy(P,PC), dpl:unpack_policy_elements(P:PC,Elements).
+
+% add_policy_elements/3
 add_policy_elements(_,_,[]).
 add_policy_elements(P,PC,[Element|Elements]) :-
 	( add_policy_element(P,PC,Element) ; true ), % silently ignore add failure (only add multiple)
 	add_policy_elements(P,PC,Elements).
+
 
 
 % delete_policy_element/2
@@ -135,3 +171,22 @@ unload_policy(P) :-
 	->  param:setparam(current_policy,none)
 	;   true
 	).
+
+% dynamic add/delete condition elements
+%    called from paapi, calls dpl_conditions
+
+dynamic_add_cond_elements(Cname,CElements) :-
+    add_cond_elements(Cname,CElements).
+dynamic_add_cond_elements(_,_). % for now ignore add fails
+
+dynamic_delete_cond_elements(Cname,CElements) :-
+    delete_cond_elements(Cname,CElements).
+dynamic_delete_cond_elements(_,_). % for now ignore delete fails
+
+%
+% RESET
+%    called from paapi
+
+preset(conditions,Name) :- conditions_reset(Name).
+preset(policies,Name) :- atom(Name), !.
+preset(_,_).

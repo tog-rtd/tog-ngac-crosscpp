@@ -1,6 +1,7 @@
 :- module(pio,[policy_cmdstrs/2,
 	       save_cmdstrs_to_file/2,
-	       display_policy/1
+	       display_policy/1, graph_policy/1,
+	       display_conditions/0, display_conditions/1
 	      ]).
 % Input / Output of various policy representations
 
@@ -156,8 +157,23 @@ save_CmdStrs_to_stream(Stream,[S|Ss]) :-
 	write(Stream,S), nl(Stream),
 	save_CmdStrs_to_stream(Stream,Ss).
 
+% DISPLAY CONDITIONS
+display_conditions :- display_conditions(all).
+
+display_conditions(all) :- !,
+	forall( dpl_conditions:cond_name(Cname,_), display_conditions(Cname) ).
+display_conditions(Cname) :- dpl_conditions:is_cond_name(Cname), !,
+	format('conditions(~q):~n',[Cname]),
+	forall( dpl_conditions:condition_variable(V:T,Cname), format('  condition_variable(~q).~n',[V:T]) ),
+	forall( ( dpl_conditions:condition_predicate(Pred,Cname,_), compound_name_arguments(Pred,Pname,Pargs) ),
+		format('  condition_predicate(~q,~q).~n',[Pname,Pargs]) ),
+	forall( ( dpl_conditions:condition_predicate(Pred,Cname,defined), compound_name_arity(Pred,Pname,_) ),
+		listing(dpl_conditions:Pname) ).
+display_conditions(_). % silently succeeds if argument is unknown
+
+% DISPLAY POLICY
 display_policy(P) :- policy(P,PC), !,
-	format('policy(~q, ~q, [~n',[P,PC]),
+	format('policy(~q, ~q, [~n', [P,PC]),
 	(   conditions(P:PC,Conditions)
 	->  format('  conditions(~q),~n',Conditions)
 	;   true
@@ -173,9 +189,10 @@ display_policy(P) :- policy(P,PC), !,
 	forall(cond(P:PC,Cond,E), format(',~n  cond(~q, ~q)',[Cond,E])),
 	format('~n]).~n').
 
+% GRAPH POLICY
 graph_policy(P) :- policy(P,PC), !,
 	(   conditions(P:PC,_)
-	->  format('# Conditional policies not currently support. Conditions ignored.')
+	->  format('# Conditional policies not currently supported. Conditions ignored.')
 	;   true
 	),
 	findall(U, element(P:PC,user(U)), Users),
@@ -183,16 +200,47 @@ graph_policy(P) :- policy(P,PC), !,
 	findall(UA, element(P:PC,user_attribute(UA)), UAs),
 	findall(OA, element(P:PC,object_attribute(OA)), OAs),
 	findall(APC, element(P:PC,policy_class(APC)), PCs),
-	format('~w~w~w~n~w~n~w~n~w~n~w~n~w~n~w~n',
+	format('~w~w~w~n~w~n~w~n',
 	       [
 		   'strict digraph "', P, '" {',
 		   '  node [shape=none]',
-		   '  APC [label="",width=0,height=0];',
+		   '  APC [label="",width=0,height=0];'
+	       ]),
+	(   ( Users \== [], UAs \== [] )
+	->  format('~w~n~w~n~w~n~w~n',
+	       [
 		   '  "<Users>"->"<User Attributes>" [arrowhead=none,style=invis];',
 		   '  "<User Attributes>"->APC [arrowhead=none,style=invis];',
 		   '  APC->"<Policy Classes>" [arrowhead=none,style=invis];',
 		   '  node [shape=ellipse]'
-	       ]),
+	       ])
+	;   format('  node [shape=ellipse]~n')
+%	;   format('~w~n',
+%	       [
+%		   ' ""->"<User Attributes>" [arrowhead=none,style=invis];'
+%	       ])
+
+	),
+
+%	(   UAs \== [] % unfinished
+%	->  format('~w~n',
+%	       [
+%		   ' "<User Attributes>"->APC [arrowhead=none,style=invis];'
+%	       ])
+%	;   format('~w~n',
+%	       [
+%		   ' "<User Attributes>"->APC [arrowhead=none,style=invis];'
+%	       ])
+%
+%	),
+
+%	format('~w~n~w~n',
+%	       [
+%		   ' APC->"<Policy Classes>" [arrowhead=none,style=invis];',
+%		   '  node [shape=ellipse]'
+%	       ]),
+
+
 	forall(member(U,Users), (dq(U,Uq), format('  ~w [peripheries=2];',Uq))), nl,
 	forall(member(O,Objects), (dq(O,Oq), format('  ~w;',Oq))),
 	forall((assign(P:PC,E1,E2),element(P:PC,user(E1))),
@@ -217,43 +265,65 @@ graph_policy(P) :- policy(P,PC), !,
 	format('~n  { rank=same; '),
 	forall( last_level(P:PC, A), (dq(A,Aq), format('~w ',Aq))),
 	format('}'),
-
-	format('~n~w~n~w',
+%
+%
+	(   Users \== []
+	->  format('~n~w~n~w',
 	       [
 		   '  subgraph user_dag {',
 		   '    subgraph u_nodes {'
 	       ]),
-	format('~n      '),
-	forall(member(U,Users), (dq(U,Uq), format('~w; ',Uq))),
-	maplist(dq,Users,Usersq),
-	atomic_list_concat(Usersq,'->',Uchain),
-	format('~n      '),
-	format('~w [style=invis];',Uchain),
-	format('~n~w~n~w',
+	    format('~n      '),
+	    forall(member(U,Users), (dq(U,Uq), format('~w; ',Uq))),
+	    maplist(dq,Users,Usersq),
+	    atomic_list_concat(Usersq,'->',Uchain),
+	    format('~n      '),
+	    format('~w [style=invis];',Uchain),
+	    format('~n    }')
+	;   format('~n~w',
 	       [
-		   '    }',
+		   '  subgraph user_dag {'
+	       ])
+	),
+%	format('~n~w~n~w',
+%
+	format('~n~w',
+	       [
 		   '    subgraph ua_nodes {'
 	       ]),
 	format('~n      '),
 	forall(member(UA,UAs), (dq(UA,UAq), format('~w; ',UAq))),
-	format('~n~w~n~w~n~w~n~w',
-	       [
-		   '    }',
-		   '  }',
-		   '  subgraph object_dag {',
-		   '    subgraph o_nodes {'
-	       ]),
-	format('~n      '),
-	forall(member(O,Objects), (dq(O,Oq), format('~w; ',Oq))),
-	maplist(dq,Objects,Objectsq),
-	atomic_list_concat(Objectsq,'->',Ochain),
-	format('~n      '),
-	format('~w [style=invis];',Ochain),
 	format('~n~w~n~w',
 	       [
 		   '    }',
+		   '  }'
+	       ]),
+%
+%
+	(   Objects \== []
+	->  format('~n~w~n~w',
+	       [
+		   '  subgraph object_dag {',
+		   '    subgraph o_nodes {'
+	       ]),
+	    format('~n      '),
+	    forall(member(O,Objects), (dq(O,Oq), format('~w; ',Oq))),
+	    maplist(dq,Objects,Objectsq),
+	    atomic_list_concat(Objectsq,'->',Ochain),
+	    format('~n      '),
+	    format('~w [style=invis];',Ochain),
+	    format('~n    }')
+	;   format('~n~w',
+	       [
+		   '  subgraph object_dag {'
+	       ])
+	),
+	format('~n~w',
+	       [
 		   '    subgraph oa_nodes {'
 	       ]),
+%
+%
 	format('~n      '),
 	forall(member(OA,OAs), (dq(OA,OAq), format('~w; ',OAq))),
 	format('~n~w~n~w~n~w',
@@ -263,12 +333,20 @@ graph_policy(P) :- policy(P,PC), !,
 		   '  subgraph pc_nodes {'
 	       ]),
 	forall(member(APC,PCs), (dq(APC,APCq), format('~n    ~w [shape=polygon,sides=5];',APCq))),
-	format('~n~w~n~w~n~w',
+	format('~n  }'),
+%	(   (Objects \== []; OAs \== [])
+	(   Objects \== []
+	->  format('~n~w~n~w',
 	       [
-		   '  }',
 		   '  node [shape=none]',
 		   '  "<Objects>"->"<Object Attributes>" [arrowhead=none,style=invis]'
-	       ]),
+	       ])
+	;   format('~n~w~n~w',
+	       [
+		   '  node [shape=none]',
+		   '  "<Object Attributes>"'
+	       ])
+	),
 	format('~n}~n').
 
 unconflicted_first_level(P:PC,A) :-
